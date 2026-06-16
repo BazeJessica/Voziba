@@ -1,0 +1,149 @@
+.main-container {
+  width: 100%;
+  .content {
+    background-color: rgb(57, 57, 163);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin:0px;
+    padding: 20px;
+
+    .hero-text {
+      font-size: 50px;
+      font-weight: 600;
+      padding-top: 40px;
+    }
+
+    .btn-green,
+    .btn-orange {
+      color: white;
+      padding: 10px 20px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      margin: 10px;
+    }
+
+    .btn-green {
+      background-color: #3e8e41;
+    }
+
+    .btn-orange {
+      background-color: #eb9e2c;
+    }
+
+    .search-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 20px;
+      position: relative;
+    }
+
+    .search-container input {
+      width: 500px;
+      padding: 20px;
+      font-size: 16px;
+      font-weight: 500;
+      border: none;
+      border-radius: 8px;
+    }
+
+    .submitbtn {
+      position: absolute;
+      right: 0;
+      background-color: #3e8e41;
+      color: white;
+      border: none;
+      padding: 20px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+  }
+  .categories,
+  .business {
+    width: 100%;
+    padding-top: 20px;
+
+    .categories-title,
+    .business-title {
+      font-weight: 700;
+      font-size: 45px;
+      word-spacing: 4px;
+      text-align: center;
+    }
+    .categories-subtitle,
+    .business-subtitle {
+      font-size: 20px;
+      color: #1d3b1e;
+      text-align: center;
+    }
+  }
+  .serviceConnect {
+    background-color: rgb(57, 57, 163);
+    padding: 20px;
+    border-radius: 10px;
+    margin: 20px;
+    color: white;
+    .sConnect-title {
+      font-weight: 700;
+      font-size: 45px;
+      word-spacing: 4px;
+      text-align: center;
+    }
+    .sConnect-subtitle {
+      font-size: 20px;
+      color: #f8fcf8;
+      text-align: center;
+    }
+    .sConnect-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;      padding: 2rem;
+      border-radius: 8px;
+      gap: 1rem;
+
+      .sConnect-content {
+        background-color: rgb(240, 237, 237);
+        color: #333;
+        border-radius: 8px;
+        padding: 1rem;
+        flex: 1 1 250px; 
+        max-width: 300px;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+        .value-icon {
+          font-size: 3rem;
+          margin-bottom: 0.5rem;
+        }
+        .sConnect-title {
+          font-size: 2rem;
+          margin-bottom: 0.5rem;
+        }
+        .sConnect-description {
+          font-size: 1rem;
+        }
+      }
+    }
+  }
+  .testimonies{
+  padding: 20px 20px;
+  .testimonies-title{
+    font-weight: 700;
+    font-size: 45px;
+    word-spacing: 4px;
+    text-align: center;
+  }
+  .testimonies-subtitle{
+    font-size: 20px;
+      text-align: center;
+  }
+}
+}

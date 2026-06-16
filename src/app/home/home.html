@@ -1,0 +1,65 @@
+<div class="main-container">
+  <div class="content">
+    <h1 class="hero-text">Discover, Connect and Book Local Services</h1>
+    <h3>
+      Find and book appointments with top-rated professionals in your area
+    </h3>
+
+    <div class="btn">
+      <button
+        class="btn-green"
+        [routerLink]="isAuthenticated ? '/businessDashboard' : '/login'"
+      >
+        Find Services Near You
+      </button>
+
+      <button class="btn-orange" routerLink="/registerBusiness">
+        Register Your Business
+      </button>
+    </div>
+    <div class="search-container">
+      <input type="text" placeholder="Search categories..." (input)="filteredCategory($event)">
+      <button type="submit" class="submitbtn">Submit</button>
+    </div>
+  </div>
+  <div class="categories">
+    <h1 class="categories-title">Browse by Category</h1>
+    <p class="categories-subtitle">
+      Explore services by Category to find what you need
+    </p>
+  <app-category (categoryisLoaded)="onCategoriesLoaded($event)"  [filteredCategories]="filteredCategories"></app-category>
+  </div>
+  <div class="business">
+    <h1 class="business-title">Featured Businesses</h1>
+    <p class="business-subtitle">Top-rated professionals ready to serve you</p>
+    <app-businesses />
+  </div>
+  <div class="serviceConnect">
+    <h1 class="sConnect-title">Why choose BusinessConnect</h1>
+    <p class="sConnect-subtitle">
+      We make finding and booking local services simple and reliable
+    </p>
+    <div class="sConnect-wrapper">
+       @for (item of valueItems; track $index) {
+      <div class="sConnect-content">
+        <div class="value-icon">{{ item.icon }}</div>
+        <h3 class="sConnect-title">{{ item.title }}</h3>
+        <p class="sConnect-description">{{ item.description }}</p>
+      </div>
+     }
+    </div>
+  </div>
+  <div class="testimonies">
+    <h1 class="testimonies-title">What Our Customers Say</h1>
+    <p class="testimonies-subtitle">
+      Join thousands of satisfied customers who found their perfect service
+      provider
+    </p>
+    <div class="testimonials-container">
+      <app-testimonies />
+    </div>
+  </div>
+  <div>
+    <app-footer></app-footer>
+  </div>
+</div>
