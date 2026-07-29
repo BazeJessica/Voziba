@@ -1,0 +1,26 @@
+<div class="testimonies-grid">
+  @for (t of testimonies; track t.id) {
+    <div class="testimony-card">
+      <div class="rating-stars">
+        @for (star of [1,2,3,4,5]; track star) {
+          <span class="star">★</span>
+        }
+      </div>
+      <p class="comment-text">"{{ t.comment }}"</p>
+      
+      <div class="work-reference">
+        <span class="ref-label">Ordered:</span>
+        <span class="ref-title">{{ t.workTitle }}</span>
+        <span class="ref-creator">by {{ t.creatorName }}</span>
+      </div>
+
+      <div class="customer-info">
+        <img [src]="t.avatar" [alt]="t.customerName" class="customer-avatar" />
+        <div class="customer-details">
+          <h4 class="customer-name">{{ t.customerName }}</h4>
+          <span class="customer-role">{{ t.customerRole }}</span>
+        </div>
+      </div>
+    </div>
+  }
+</div>

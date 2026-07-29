@@ -1,54 +1,91 @@
-import { Component } from '@angular/core';
-import { categoryType } from '../models/types';
+import { Component, inject } from '@angular/core';
+import { WorksService } from '../services/works.service';
+import { workType } from '../models/types';
 
 @Component({
   selector: 'app-home',
-  imports: [],
+  standalone: false,
   templateUrl: './home.html',
   styleUrl: './home.scss',
 })
 export class Home {
-  allCategories: categoryType[]=[];
-  filteredCategories: categoryType[] = [];
+  worksService = inject(WorksService);
 
+  searchQuery = '';
+  showAddWorkModal = false;
+  selectedWorkToBook: workType | null = null;
+  selectedWorkDetails: workType | null = null;
 
-  onCategoriesLoaded(categories: categoryType[]) {
-    this.allCategories = categories;
-    this.filteredCategories = categories;
-
-  }
-
-  filteredCategory(event: Event) {
-    const input = event.target;
-    let searchIterm = '';
-    if (input instanceof HTMLInputElement) {
-      searchIterm = input.value.toLowerCase();
-    }
-    this.filteredCategories = this.allCategories.filter(cat =>
-      cat.name.toLowerCase().includes(searchIterm)
-    );
-  }
-  isAuthenticated = false;
   valueItems = [
     {
       icon: "🔍",
-      title: "Easy Discovery",
-      description: "Find qualified professionals in your area with our smart search and filtering system"
+      title: "Handcrafted Quality",
+      description: "Discover genuine artisans, woodworkers, tailors & creators with verified authentic portfolios."
     },
     {
       icon: "⭐",
-      title: "Verified Reviews",
-      description: "Read authentic reviews from real customers to make informed decisions"
+      title: "Direct Custom Orders",
+      description: "Order custom sizes, materials & personalized specifications directly with the maker."
     },
     {
       icon: "📅",
-      title: "Instant Booking",
-      description: "Book appointments online 24/7 with real-time availability"
+      title: "Seamless Booking",
+      description: "Schedule consultations and book handcrafted items online with instant confirmation."
     },
     {
       icon: "🛡️",
-      title: "Secure & Safe",
-      description: "All professionals are background-checked and insured for your peace of mind"
+      title: "Buyer Protection",
+      description: "Secure booking payments and direct creator communication for total satisfaction."
     }
-  ];  
+  ];
+
+  onSearchInput(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.searchQuery = input.value;
+    this.worksService.setSearchQuery(this.searchQuery);
+  }
+
+  onSearchSubmit() {
+    this.worksService.setSearchQuery(this.searchQuery);
+    const worksElement = document.getElementById('works');
+    if (worksElement) {
+      worksElement.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
+  openAddWork() {
+    this.showAddWorkModal = true;
+  }
+
+  closeAddWork() {
+    this.showAddWorkModal = false;
+  }
+
+  openBooking(work: workType) {
+    this.selectedWorkToBook = work;
+  }
+
+  closeBooking() {
+    this.selectedWorkToBook = null;
+  }
+
+  openWorkDetails(work: workType) {
+    this.selectedWorkDetails = work;
+  }
+
+  closeWorkDetails() {
+    this.selectedWorkDetails = null;
+  }
+
+  handleBookFromDetails(work: workType) {
+    this.selectedWorkDetails = null;
+    this.selectedWorkToBook = work;
+  }
+
+  scrollToSection(id: string) {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
 }

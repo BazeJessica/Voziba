@@ -1,23 +1,25 @@
-import { Component } from '@angular/core';
-import { MatDialog as Mat } from '@angular/material/dialog';
+import { Component, EventEmitter, Output } from '@angular/core';
 
 @Component({
   selector: 'app-nav',
-  imports: [],
+  standalone: false,
   templateUrl: './nav.html',
   styleUrl: './nav.scss',
 })
 export class Nav {
-  authenticated = false;
-  constructor(private dialog: Mat) {}
-
+  @Output() openListWorkModal = new EventEmitter<void>();
   menuOpen = false;
 
   toggleMenu() {
     this.menuOpen = !this.menuOpen;
   }
-  
+
   closeMenu() {
     this.menuOpen = false;
+  }
+
+  onListWorkClick() {
+    this.closeMenu();
+    this.openListWorkModal.emit();
   }
 }

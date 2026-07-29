@@ -1,44 +1,58 @@
-<div class="footer">
-  <div class="links-container">
-    <section class="">
-     <h2>Connecting you with trusted local service providers</h2> 
-     <img src="/assets/logo.png" alt="" srcset="">
-    </section>
-    <section>
-      <ul>
-        <h2>Support</h2>
-        <li>Help Center</li>
-        <li>Contact Us</li>
-        <li>Documentation</li>
-        <li>API</li>
-      </ul>
-    </section>
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="links-container">
+      <section class="brand-section">
+        <div class="footer-logo">
+          <div class="logo-icon">V</div>
+          <span class="brand-name">Voziba</span>
+        </div>
+        <p class="brand-tagline">The trusted marketplace for artisanal handiworks, bespoke crafts, and local master
+          services.</p>
+        <div class="social-links">
+          <mat-icon class="social-icon">language</mat-icon>
+          <mat-icon class="social-icon">photo_camera</mat-icon>
+          <mat-icon class="social-icon">work</mat-icon>
+          <mat-icon class="social-icon">location_on</mat-icon>
+        </div>
+      </section>
 
-    <section>
-      <ul>
-        <h2>For Businesses</h2>
-        <li>List Your Services</li>
-        <li>Partner Program</li>
-        <li>Register Your Business</li>
-        <li>Business Support</li>
-      </ul>
-    </section>
-    <section>
-      <ul>
-        <h2>Company</h2>
-        <li>About Us</li>
-        <li>Careers</li>
-        <li>Press</li>
-        <li>Contact</li>
-      </ul>
-    </section>
-  </div>
+      <section>
+        <h2>Popular Categories</h2>
+        <ul>
+          <li><a routerLink="/#categories">Woodworking & Furniture</a></li>
+          <li><a routerLink="/#categories">Bespoke Tailoring</a></li>
+          <li><a routerLink="/#categories">Pottery & Ceramics</a></li>
+          <li><a routerLink="/#categories">Custom Leathercraft</a></li>
+          <li><a routerLink="/#categories">Jewelry & Accessories</a></li>
+        </ul>
+      </section>
 
-  <div class="copyright">
-    <hr />
-    <p>
-      &copy; 2025 BusinessConnect. All rights reserved. | Privacy Policy | Terms
-      of Service
-    </p>
+      <section>
+        <h2>For Artisans & Creators</h2>
+        <ul>
+          <li><a routerLink="/#works">List Your Handiwork</a></li>
+          <li><a routerLink="/">Creator Guidelines</a></li>
+          <li><a routerLink="/">Booking Management</a></li>
+          <li><a routerLink="/">Artisan Stories</a></li>
+          <li><a routerLink="/">Partner Support</a></li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Customer Care</h2>
+        <ul>
+          <li><a routerLink="/">How Booking Works</a></li>
+          <li><a routerLink="/">Buyer Protection & Guarantee</a></li>
+          <li><a routerLink="/">Custom Orders FAQ</a></li>
+          <li><a routerLink="/">Contact Support</a></li>
+          <li><a routerLink="/">Terms & Privacy</a></li>
+        </ul>
+      </section>
+    </div>
+
+    <div class="copyright">
+      <hr />
+      <p>© {{ currentYear }} Voziba Inc. All rights reserved. Connecting consumers with authentic craftsmanship.</p>
+    </div>
   </div>
-</div>
+</footer>

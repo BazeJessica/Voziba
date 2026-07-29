@@ -1,0 +1,107 @@
+/* Voziba Teal Design System - Master Theme Variables */
+
+:root {
+  /* Teal Primary Palette Shades */
+  --teal-50: #f0fdfa;
+  --teal-100: #ccfbf1;
+  --teal-200: #99f6e4;
+  --teal-300: #5eead4;
+  --teal-400: #2dd4bf;
+  --teal-500: #14b8a6;
+  --teal-600: #0d9488;
+  --teal-700: #0f766e;
+  --teal-800: #115e59;
+  --teal-900: #134e4a;
+  --teal-950: #042f2e;
+
+  /* Warm Amber/Gold Accent Shades */
+  --amber-400: #fbbf24;
+  --amber-500: #f59e0b;
+  --amber-600: #d97706;
+  --amber-700: #b45309;
+
+  /* Neutral Slate Colors */
+  --slate-50: #f8fafc;
+  --slate-100: #f1f5f9;
+  --slate-200: #e2e8f0;
+  --slate-300: #cbd5e1;
+  --slate-400: #94a3b8;
+  --slate-500: #64748b;
+  --slate-600: #475569;
+  --slate-700: #334155;
+  --slate-800: #1e293b;
+  --slate-900: #0f172a;
+
+  /* Semantic Theme Variables */
+  --color-primary: var(--teal-600);
+  --color-primary-hover: var(--teal-700);
+  --color-primary-active: var(--teal-800);
+  --color-primary-dark: var(--teal-900);
+  --color-primary-darker: var(--teal-950);
+  --color-primary-light: var(--teal-100);
+  --color-primary-subtle: var(--teal-50);
+  --color-primary-border: var(--teal-300);
+
+  --color-accent: var(--amber-500);
+  --color-accent-hover: var(--amber-600);
+  --color-accent-dark: var(--amber-700);
+  --color-accent-light: #fef3c7;
+
+  /* Surfaces & Backgrounds */
+  --color-bg-page: var(--slate-50);
+  --color-bg-surface: #ffffff;
+  --color-bg-card: #ffffff;
+  --color-bg-card-alt: var(--slate-100);
+  --color-bg-hero: linear-gradient(135deg, var(--teal-950) 0%, var(--teal-900) 40%, var(--teal-800) 100%);
+  --color-bg-hero-badge: rgba(204, 251, 241, 0.15);
+  --color-bg-section: var(--teal-50);
+  --color-bg-highlight: rgba(204, 251, 241, 0.3);
+
+  /* Nav & Header Variables */
+  --color-nav-bg: #ffffff;
+  --color-nav-text: var(--slate-700);
+  --color-nav-hover: var(--teal-600);
+  --color-nav-border: var(--slate-200);
+
+  /* Footer Theme Variables */
+  --color-footer-bg: var(--teal-950);
+  --color-footer-text: var(--teal-100);
+  --color-footer-heading: #ffffff;
+  --color-footer-muted: #94a3b8;
+  --color-footer-border: var(--teal-800);
+  --color-footer-hover: var(--teal-300);
+
+  /* Typography Colors */
+  --color-text-main: var(--slate-800);
+  --color-text-title: var(--teal-900);
+  --color-text-muted: var(--slate-500);
+  --color-text-inverse: #ffffff;
+  --color-text-subtle: var(--slate-400);
+
+  /* Interactive Elements & Controls */
+  --color-border: var(--slate-200);
+  --color-border-subtle: #f1f5f9;
+  --color-border-focus: var(--teal-500);
+
+  /* Status Colors */
+  --color-success: #10b981;
+  --color-success-bg: #ecfdf5;
+  --color-warning: var(--amber-500);
+  --color-danger: #ef4444;
+  --color-danger-bg: #fef2f2;
+
+  /* Modals & Overlays */
+  --color-backdrop: rgba(4, 47, 46, 0.75);
+  --color-dark-glass-bg: rgba(19, 78, 74, 0.85);
+
+  /* Shadows & Glassmorphism */
+  --color-shadow-sm: 0 1px 3px rgba(15, 118, 110, 0.08);
+  --color-shadow-md: 0 4px 14px rgba(15, 118, 110, 0.12);
+  --color-shadow-lg: 0 10px 30px rgba(15, 118, 110, 0.18);
+  --color-shadow-teal-glow: 0 4px 14px rgba(45, 212, 191, 0.4);
+  --color-shadow-amber-glow: 0 4px 14px rgba(245, 158, 11, 0.4);
+  --color-glass-bg: rgba(255, 255, 255, 0.9);
+  --color-glass-card: rgba(255, 255, 255, 0.08);
+  --color-glass-border-light: rgba(255, 255, 255, 0.12);
+  --color-glass-divider: rgba(255, 255, 255, 0.2);
+}
