@@ -1,0 +1,86 @@
+<div class="modal-backdrop" (click)="onClose()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="header-title">
+        <h2>Order / Book Handiwork</h2>
+        <p>Direct booking with artisan <strong>{{ work.creatorName }}</strong></p>
+      </div>
+      <button class="btn-close" (click)="onClose()">&times;</button>
+    </div>
+
+    @if (confirmedBooking) {
+      <div class="success-state">
+        <div class="success-icon">🎉</div>
+        <h3>Booking Confirmed!</h3>
+        <p>Your request for <strong>{{ work.title }}</strong> has been submitted to {{ work.creatorName }}.</p>
+        
+        <div class="receipt-box">
+          <div class="receipt-row">
+            <span>Booking ID:</span>
+            <strong>{{ confirmedBooking.id }}</strong>
+          </div>
+          <div class="receipt-row">
+            <span>Date Required:</span>
+            <strong>{{ confirmedBooking.bookingDate }}</strong>
+          </div>
+          <div class="receipt-row">
+            <span>Total Price:</span>
+            <strong>${{ confirmedBooking.totalPrice }}</strong>
+          </div>
+          <div class="receipt-row">
+            <span>Turnaround:</span>
+            <strong>{{ work.turnaround }}</strong>
+          </div>
+        </div>
+
+        <p class="confirmation-note">A confirmation email has been sent to {{ confirmedBooking.customerEmail }}. The creator will contact you directly to confirm specifics.</p>
+        <button class="btn-done" (click)="onClose()">Done</button>
+      </div>
+    } @else {
+      <div class="work-summary-bar">
+        <img [src]="work.img" [alt]="work.title" class="summary-thumb" />
+        <div class="summary-info">
+          <h4>{{ work.title }}</h4>
+          <span class="summary-category">{{ work.category }} • {{ work.turnaround }}</span>
+        </div>
+        <div class="summary-price">${{ work.price }}</div>
+      </div>
+
+      <form (ngSubmit)="onSubmit()" class="modal-body">
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label>Your Full Name *</label>
+            <input type="text" [(ngModel)]="customerName" name="customerName" placeholder="e.g. Jane Doe" required />
+          </div>
+
+          <div class="form-group flex-1">
+            <label>Email Address *</label>
+            <input type="email" [(ngModel)]="customerEmail" name="customerEmail" placeholder="jane@example.com" required />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label>Phone Number</label>
+            <input type="tel" [(ngModel)]="customerPhone" name="customerPhone" placeholder="(555) 000-0000" />
+          </div>
+
+          <div class="form-group flex-1">
+            <label>Preferred Delivery / Service Date *</label>
+            <input type="date" [(ngModel)]="bookingDate" name="bookingDate" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Custom Specifications / Order Notes</label>
+          <textarea [(ngModel)]="customNotes" name="customNotes" rows="3" placeholder="Provide dimensions, color preferences, engraving details or specific requirements..."></textarea>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-cancel" (click)="onClose()">Cancel</button>
+          <button type="submit" class="btn-submit">Confirm Booking & Order (${{ work.price }})</button>
+        </div>
+      </form>
+    }
+  </div>
+</div>

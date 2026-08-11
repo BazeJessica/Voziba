@@ -1,7 +1,4 @@
-/* Voziba Teal Design System - Master Theme Variables */
-
 :root {
-  /* Teal Primary Palette Shades */
   --teal-50: #f0fdfa;
   --teal-100: #ccfbf1;
   --teal-200: #99f6e4;
@@ -14,13 +11,11 @@
   --teal-900: #134e4a;
   --teal-950: #042f2e;
 
-  /* Warm Amber/Gold Accent Shades */
   --amber-400: #fbbf24;
   --amber-500: #f59e0b;
   --amber-600: #d97706;
   --amber-700: #b45309;
 
-  /* Neutral Slate Colors */
   --slate-50: #f8fafc;
   --slate-100: #f1f5f9;
   --slate-200: #e2e8f0;
@@ -32,7 +27,6 @@
   --slate-800: #1e293b;
   --slate-900: #0f172a;
 
-  /* Semantic Theme Variables */
   --color-primary: var(--teal-600);
   --color-primary-hover: var(--teal-700);
   --color-primary-active: var(--teal-800);
@@ -57,13 +51,11 @@
   --color-bg-section: var(--teal-50);
   --color-bg-highlight: rgba(204, 251, 241, 0.3);
 
-  /* Nav & Header Variables */
   --color-nav-bg: #ffffff;
   --color-nav-text: var(--slate-700);
   --color-nav-hover: var(--teal-600);
   --color-nav-border: var(--slate-200);
 
-  /* Footer Theme Variables */
   --color-footer-bg: var(--teal-950);
   --color-footer-text: var(--teal-100);
   --color-footer-heading: #ffffff;
@@ -71,30 +63,25 @@
   --color-footer-border: var(--teal-800);
   --color-footer-hover: var(--teal-300);
 
-  /* Typography Colors */
   --color-text-main: var(--slate-800);
   --color-text-title: var(--teal-900);
   --color-text-muted: var(--slate-500);
   --color-text-inverse: #ffffff;
   --color-text-subtle: var(--slate-400);
 
-  /* Interactive Elements & Controls */
   --color-border: var(--slate-200);
   --color-border-subtle: #f1f5f9;
   --color-border-focus: var(--teal-500);
 
-  /* Status Colors */
   --color-success: #10b981;
   --color-success-bg: #ecfdf5;
   --color-warning: var(--amber-500);
   --color-danger: #ef4444;
   --color-danger-bg: #fef2f2;
 
-  /* Modals & Overlays */
   --color-backdrop: rgba(4, 47, 46, 0.75);
   --color-dark-glass-bg: rgba(19, 78, 74, 0.85);
 
-  /* Shadows & Glassmorphism */
   --color-shadow-sm: 0 1px 3px rgba(15, 118, 110, 0.08);
   --color-shadow-md: 0 4px 14px rgba(15, 118, 110, 0.12);
   --color-shadow-lg: 0 10px 30px rgba(15, 118, 110, 0.18);
