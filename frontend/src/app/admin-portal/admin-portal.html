@@ -1,0 +1,525 @@
+<div class="admin-portal-wrapper">
+
+  <!-- Top Admin Hero Header -->
+  <header class="admin-header">
+    <div class="admin-header-content">
+      <div class="admin-title-row">
+        <div class="admin-title-left">
+          <div class="admin-badge"><mat-icon>admin_panel_settings</mat-icon> Platform Admin Control Center</div>
+          <h1>Voziba User, Business & Privileges Management</h1>
+          <p>Oversee registered consumers, grant or revoke granular user permissions, manage artisan business profiles, and delete policy-violating items.</p>
+        </div>
+        <button class="btn-admin-logout" (click)="onLogout()" title="Log out of Admin Control Center">
+          <mat-icon>logout</mat-icon> Log Out Admin
+        </button>
+      </div>
+
+      <!-- KPI Metrics Row -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-icon icon-users"><mat-icon>people</mat-icon></div>
+          <div class="kpi-data">
+            <span class="kpi-val">{{ totalUsersCount() }}</span>
+            <span class="kpi-lbl">Registered Consumers</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon icon-biz"><mat-icon>storefront</mat-icon></div>
+          <div class="kpi-data">
+            <span class="kpi-val">{{ totalBusinessesCount() }}</span>
+            <span class="kpi-lbl">Artisan Business Owners</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon icon-works"><mat-icon>inventory_2</mat-icon></div>
+          <div class="kpi-data">
+            <span class="kpi-val">{{ totalWorksCount() }}</span>
+            <span class="kpi-lbl">Listed Handiworks</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon icon-revenue"><mat-icon>payments</mat-icon></div>
+          <div class="kpi-data">
+            <span class="kpi-val">${{ totalPlatformVolume() | number:'1.0-2' }}</span>
+            <span class="kpi-lbl">Platform Volume</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="admin-main-container">
+
+    <!-- Toast Notification Banner -->
+    @if (toastMessage()) {
+    <div class="admin-toast">
+      <mat-icon>check_circle</mat-icon>
+      <span>{{ toastMessage() }}</span>
+    </div>
+    }
+
+    <!-- Toolbar Controls & Tabs -->
+    <div class="admin-nav-toolbar">
+      <div class="admin-tabs">
+        <button class="tab-btn" [class.active]="activeTab() === 'users'" (click)="setTab('users')">
+          <mat-icon>people</mat-icon> Manage Users ({{ totalUsersCount() }})
+        </button>
+
+        <button class="tab-btn" [class.active]="activeTab() === 'businesses'" (click)="setTab('businesses')">
+          <mat-icon>storefront</mat-icon> Business Owners ({{ totalBusinessesCount() }})
+        </button>
+
+        <button class="tab-btn" [class.active]="activeTab() === 'privileges'" (click)="setTab('privileges')">
+          <mat-icon>verified_user</mat-icon> Roles & Privileges Matrix
+        </button>
+
+        <button class="tab-btn" [class.active]="activeTab() === 'works'" (click)="setTab('works')">
+          <mat-icon>grid_view</mat-icon> Handiworks Catalog ({{ totalWorksCount() }})
+        </button>
+
+        <button class="tab-btn" [class.active]="activeTab() === 'bookings'" (click)="setTab('bookings')">
+          <mat-icon>receipt_long</mat-icon> Global Bookings
+        </button>
+      </div>
+
+      <div class="admin-search-box">
+        <mat-icon>search</mat-icon>
+        <input type="text" [value]="searchQuery()" (input)="onSearch($event)" placeholder="Search users, roles, or privileges..." />
+      </div>
+    </div>
+
+    <!-- TAB 1: USERS (CONSUMERS) MANAGEMENT TABLE -->
+    @if (activeTab() === 'users') {
+    <section class="admin-section">
+      <div class="section-title-bar">
+        <h2>Consumer Accounts Directory & Privileges</h2>
+        <p>View personal details, grant or revoke granular edit/delete/approve privileges, or remove accounts.</p>
+      </div>
+
+      <div class="table-card">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Consumer Name</th>
+              <th>Email Address</th>
+              <th>System Role</th>
+              <th>Active Privileges</th>
+              <th>Account Status</th>
+              <th>Admin Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (user of filteredUsers(); track user.id) {
+            <tr>
+              <td>
+                <div class="user-cell">
+                  <div class="user-avatar-icon"><mat-icon>person</mat-icon></div>
+                  <div class="user-name-box">
+                    <span class="user-name">{{ user.name }}</span>
+                    <span class="user-id">{{ user.id }} | Joined {{ user.joinedDate | date:'shortDate' }}</span>
+                  </div>
+                </div>
+              </td>
+
+              <td>
+                <a [href]="'mailto:' + user.email" class="email-link">
+                  <mat-icon>email</mat-icon> {{ user.email }}
+                </a>
+              </td>
+
+              <td>
+                <span class="role-pill" [class.role-admin]="user.role === 'Super Admin'" [class.role-mod]="user.role === 'Moderator'">
+                  {{ user.role }}
+                </span>
+              </td>
+
+              <td>
+                <div class="privilege-tags">
+                  <span class="priv-badge" [class.enabled]="user.privileges.canView" title="Can View">👁️ View</span>
+                  <span class="priv-badge" [class.enabled]="user.privileges.canEdit" title="Can Edit Profile & Orders">✏️ Edit</span>
+                  <span class="priv-badge" [class.enabled]="user.privileges.canDelete" title="Can Delete Items">❌ Delete</span>
+                  <span class="priv-badge" [class.enabled]="user.privileges.canApproveOrders" title="Can Approve Orders">✅ Approve</span>
+                  <span class="priv-badge" [class.enabled]="user.privileges.canManageRoles" title="Can Manage Roles">🛡️ Roles</span>
+                </div>
+              </td>
+
+              <td>
+                <span class="status-badge" [class.status-active]="user.status === 'Active'" [class.status-suspended]="user.status === 'Suspended'">
+                  {{ user.status }}
+                </span>
+              </td>
+
+              <td>
+                <div class="action-btns">
+                  <button class="btn-sm btn-privileges" (click)="openPrivilegesModal(user)" title="Edit Role & Privileges">
+                    <mat-icon>security</mat-icon> Privileges
+                  </button>
+
+                  <button class="btn-sm btn-info" (click)="viewUserBookings(user)" title="View Orders">
+                    <mat-icon>receipt</mat-icon> Orders
+                  </button>
+
+                  <button class="btn-sm" [class.btn-danger]="user.status === 'Active'" [class.btn-success]="user.status === 'Suspended'" (click)="toggleUserStatus(user)">
+                    <mat-icon>{{ user.status === 'Active' ? 'block' : 'check_circle' }}</mat-icon>
+                    {{ user.status === 'Active' ? 'Suspend' : 'Activate' }}
+                  </button>
+
+                  <button class="btn-sm btn-delete" (click)="deleteUserAccount(user)" title="Delete Account">
+                    <mat-icon>delete_forever</mat-icon>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            } @empty {
+            <tr>
+              <td colspan="6" class="empty-table">No users found matching your search query.</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+    }
+
+    <!-- TAB 2: BUSINESS OWNERS (ARTISANS) MANAGEMENT -->
+    @if (activeTab() === 'businesses') {
+    <section class="admin-section">
+      <div class="section-title-bar">
+        <h2>Registered Artisan Business Owners</h2>
+        <p>Manage artisan business profiles, inspect studio metrics, edit branding info, or remove studio listings.</p>
+      </div>
+
+      <div class="biz-grid">
+        @for (biz of filteredBusinesses(); track biz.name) {
+        <div class="biz-admin-card">
+          <div class="biz-card-header">
+            <img [src]="biz.avatar" [alt]="biz.name" class="biz-avatar" />
+            <div class="biz-header-info">
+              <h3>{{ biz.name }}</h3>
+              <span class="biz-cat"><mat-icon>category</mat-icon> {{ biz.category }}</span>
+              <span class="biz-loc">📍 {{ biz.location }}</span>
+            </div>
+            <span class="verified-badge"><mat-icon>verified</mat-icon> Verified Studio</span>
+          </div>
+
+          <div class="biz-card-stats">
+            <div class="stat-pill">
+              <span class="num">{{ biz.totalWorks }}</span>
+              <span class="lbl">Handiworks</span>
+            </div>
+            <div class="stat-pill">
+              <span class="num">{{ biz.totalOrders }}</span>
+              <span class="lbl">Orders</span>
+            </div>
+            <div class="stat-pill highlight">
+              <span class="num">${{ biz.totalRevenue }}</span>
+              <span class="lbl">Total Revenue</span>
+            </div>
+          </div>
+
+          <div class="biz-card-contact">
+            <p><mat-icon>email</mat-icon> {{ biz.email }}</p>
+            <p><mat-icon>phone</mat-icon> {{ biz.phone }}</p>
+            <p><mat-icon>schedule</mat-icon> {{ biz.businessHours }}</p>
+          </div>
+
+          <div class="biz-card-actions">
+            <button class="btn-portal" (click)="jumpToBusinessPortal(biz.name)">
+              <mat-icon>launch</mat-icon> Open Business Dashboard
+            </button>
+
+            <button class="btn-edit-profile" (click)="openEditBusiness(biz)">
+              <mat-icon>edit</mat-icon> Edit Profile
+            </button>
+
+            <button class="btn-delete-biz" (click)="deleteBusinessOwner(biz.name)" title="Remove Studio">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+        }
+      </div>
+    </section>
+    }
+
+    <!-- TAB 3: ROLES & PRIVILEGES MATRIX -->
+    @if (activeTab() === 'privileges') {
+    <section class="admin-section">
+      <div class="section-title-bar">
+        <h2>System Roles & Granular Privileges Matrix</h2>
+        <p>Define global access control policies for each role across the Voziba platform.</p>
+      </div>
+
+      <div class="matrix-grid">
+        @for (role of roleMatrixList(); track role.roleName) {
+        <div class="role-matrix-card">
+          <div class="matrix-header">
+            <mat-icon class="shield-icon">shield</mat-icon>
+            <div>
+              <h3>{{ role.roleName }}</h3>
+              <p>{{ role.description }}</p>
+            </div>
+          </div>
+
+          <div class="privileges-checklist">
+            <h4>Granted Access Privileges:</h4>
+
+            <label class="check-item">
+              <input type="checkbox" [checked]="role.privileges.canView" (change)="toggleMatrixPrivilege(role, 'canView')" />
+              <span class="lbl-txt">👁️ <strong>Can View Dashboards & Listings</strong> - Access viewing interfaces.</span>
+            </label>
+
+            <label class="check-item">
+              <input type="checkbox" [checked]="role.privileges.canEdit" (change)="toggleMatrixPrivilege(role, 'canEdit')" />
+              <span class="lbl-txt">✏️ <strong>Can Edit Profiles & Handiworks</strong> - Modify details & inventory.</span>
+            </label>
+
+            <label class="check-item">
+              <input type="checkbox" [checked]="role.privileges.canDelete" (change)="toggleMatrixPrivilege(role, 'canDelete')" />
+              <span class="lbl-txt">❌ <strong>Can Delete Items & Accounts</strong> - Permanently remove records.</span>
+            </label>
+
+            <label class="check-item">
+              <input type="checkbox" [checked]="role.privileges.canApproveOrders" (change)="toggleMatrixPrivilege(role, 'canApproveOrders')" />
+              <span class="lbl-txt">✅ <strong>Can Approve/Confirm Orders</strong> - Confirm & execute customer bookings.</span>
+            </label>
+
+            <label class="check-item">
+              <input type="checkbox" [checked]="role.privileges.canManageRoles" (change)="toggleMatrixPrivilege(role, 'canManageRoles')" />
+              <span class="lbl-txt">🛡️ <strong>Can Manage System Roles</strong> - Modify role assignments & security.</span>
+            </label>
+          </div>
+        </div>
+        }
+      </div>
+    </section>
+    }
+
+    <!-- TAB 4: HANDIWORKS CATALOG -->
+    @if (activeTab() === 'works') {
+    <section class="admin-section">
+      <div class="section-title-bar">
+        <h2>All Platform Handiworks Catalog</h2>
+        <p>Inspect or delete active product listings across verified business owners.</p>
+      </div>
+
+      <div class="works-catalog-grid">
+        @for (work of worksService.works(); track work.id) {
+        <div class="catalog-card">
+          <img [src]="work.img" [alt]="work.title" class="work-thumb" />
+          <div class="catalog-info">
+            <span class="work-cat">{{ work.category }}</span>
+            <h4>{{ work.title }}</h4>
+            <p class="creator-line">By <strong>{{ work.creatorName }}</strong> ({{ work.location }})</p>
+            <div class="price-row">
+              <span class="price">${{ work.price }}</span>
+              <button class="btn-delete-work" (click)="deleteWorkFromAdmin(work)" title="Delete Handiwork">
+                <mat-icon>delete</mat-icon> Delete
+              </button>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+    </section>
+    }
+
+    <!-- TAB 5: GLOBAL BOOKINGS -->
+    @if (activeTab() === 'bookings') {
+    <section class="stage-section">
+      <div class="section-title-bar">
+        <h2>Global Platform Bookings</h2>
+        <p>Complete record of all orders and bookings across all business owners.</p>
+      </div>
+
+      <div class="table-card">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Booking ID</th>
+              <th>Work Title</th>
+              <th>Business Owner</th>
+              <th>Customer Name</th>
+              <th>Customer Email</th>
+              <th>Booking Date</th>
+              <th>Total Price</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (booking of worksService.bookings(); track booking.id) {
+            <tr>
+              <td><strong>#{{ booking.id }}</strong></td>
+              <td>{{ booking.workTitle }}</td>
+              <td>{{ booking.creatorName }}</td>
+              <td>{{ booking.customerName }}</td>
+              <td>{{ booking.customerEmail }}</td>
+              <td>{{ booking.bookingDate }}</td>
+              <td><strong>${{ booking.totalPrice }}</strong></td>
+              <td>
+                <span class="status-badge" [class.status-active]="booking.status === 'confirmed' || booking.status === 'completed'">
+                  {{ booking.status | titlecase }}
+                </span>
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+    }
+
+  </main>
+</div>
+
+<!-- Modal: User Privileges Management -->
+@if (editingPrivilegesUser) {
+<div class="admin-modal-backdrop" (click)="closePrivilegesModal()">
+  <div class="admin-modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-hdr">
+      <h3>Manage Privileges - {{ editingPrivilegesUser.name }}</h3>
+      <button class="btn-close" (click)="closePrivilegesModal()">&times;</button>
+    </div>
+    <div class="modal-bdy">
+      <div class="user-meta-summary">
+        <p><strong>Email:</strong> {{ editingPrivilegesUser.email }} | <strong>ID:</strong> {{ editingPrivilegesUser.id }}</p>
+      </div>
+
+      <div class="form-grp" style="margin-bottom: 1.25rem;">
+        <label style="font-weight: 800; font-size: 0.8rem; text-transform: uppercase;">Assign System Role</label>
+        <select [(ngModel)]="editingPrivilegesUser.role" class="form-input" style="width: 100%; padding: 0.6rem; border-radius: 8px; border: 1px solid var(--slate-300); font-size: 0.9rem;">
+          <option value="Consumer">Consumer</option>
+          <option value="Business Owner">Business Owner</option>
+          <option value="Moderator">Platform Moderator</option>
+          <option value="Super Admin">Super Admin</option>
+        </select>
+      </div>
+
+      <h4 style="font-weight: 800; margin-bottom: 0.75rem; color: var(--slate-900);">Granular Privileges & Permissions:</h4>
+
+      <div class="privileges-checklist">
+        <label class="check-item">
+          <input type="checkbox" [(ngModel)]="tempPrivileges.canView" />
+          <span>👁️ <strong>Can View Dashboards & Listings</strong></span>
+        </label>
+
+        <label class="check-item">
+          <input type="checkbox" [(ngModel)]="tempPrivileges.canEdit" />
+          <span>✏️ <strong>Can Edit Profiles & Handiworks</strong></span>
+        </label>
+
+        <label class="check-item">
+          <input type="checkbox" [(ngModel)]="tempPrivileges.canDelete" />
+          <span>❌ <strong>Can Delete Listings & Accounts</strong></span>
+        </label>
+
+        <label class="check-item">
+          <input type="checkbox" [(ngModel)]="tempPrivileges.canApproveOrders" />
+          <span>✅ <strong>Can Approve & Confirm Customer Orders</strong></span>
+        </label>
+
+        <label class="check-item">
+          <input type="checkbox" [(ngModel)]="tempPrivileges.canManageRoles" />
+          <span>🛡️ <strong>Can Manage Security & Roles</strong></span>
+        </label>
+      </div>
+
+      <div class="modal-actions" style="margin-top: 1.5rem; display: flex; justify-content: flex-end; gap: 0.75rem;">
+        <button class="btn-secondary" (click)="closePrivilegesModal()">Cancel</button>
+        <button class="btn-primary" (click)="saveUserPrivileges()">Save Privileges</button>
+      </div>
+    </div>
+  </div>
+</div>
+}
+
+<!-- Modal: View User Orders -->
+@if (selectedUser) {
+<div class="admin-modal-backdrop" (click)="closeUserModal()">
+  <div class="admin-modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-hdr">
+      <h3>Customer Orders History - {{ selectedUser.name }}</h3>
+      <button class="btn-close" (click)="closeUserModal()">&times;</button>
+    </div>
+    <div class="modal-bdy">
+      <p><strong>Email:</strong> {{ selectedUser.email }} | <strong>Phone:</strong> {{ selectedUser.phone }}</p>
+
+      @for (b of userBookingsModal; track b.id) {
+      <div class="order-mini-card">
+        <div class="row1">
+          <span class="b-id">#{{ b.id }}</span>
+          <span class="b-work">{{ b.workTitle }}</span>
+          <span class="b-price">${{ b.totalPrice }}</span>
+        </div>
+        <div class="row2">
+          <span>Artisan Studio: {{ b.creatorName }}</span>
+          <span>Target Date: {{ b.bookingDate }}</span>
+          <span class="b-status">{{ b.status | titlecase }}</span>
+        </div>
+      </div>
+      } @empty {
+      <div class="empty-orders">No bookings recorded for this consumer yet.</div>
+      }
+    </div>
+  </div>
+</div>
+}
+
+<!-- Modal: Admin Edit Business Profile -->
+@if (editingBusiness) {
+<div class="admin-modal-backdrop" (click)="closeEditBusiness()">
+  <div class="admin-modal-card lg" (click)="$event.stopPropagation()">
+    <div class="modal-hdr">
+      <h3>Admin: Edit Business Owner Profile</h3>
+      <button class="btn-close" (click)="closeEditBusiness()">&times;</button>
+    </div>
+    <div class="modal-bdy form-grid">
+      <div class="form-grp">
+        <label>Business Name</label>
+        <input type="text" [(ngModel)]="editingBusiness.name" class="form-input" />
+      </div>
+
+      <div class="form-grp">
+        <label>Craft Category</label>
+        <input type="text" [(ngModel)]="editingBusiness.category" class="form-input" />
+      </div>
+
+      <div class="form-grp">
+        <label>Studio Location</label>
+        <input type="text" [(ngModel)]="editingBusiness.location" class="form-input" />
+      </div>
+
+      <div class="form-grp">
+        <label>Logo Avatar URL</label>
+        <input type="text" [(ngModel)]="editingBusiness.avatar" class="form-input" />
+      </div>
+
+      <div class="form-grp">
+        <label>Contact Email</label>
+        <input type="email" [(ngModel)]="editingBusiness.email" class="form-input" />
+      </div>
+
+      <div class="form-grp">
+        <label>Phone Number</label>
+        <input type="tel" [(ngModel)]="editingBusiness.phone" class="form-input" />
+      </div>
+
+      <div class="form-grp full-width">
+        <label>Craftsmanship Story / Bio</label>
+        <textarea [(ngModel)]="editingBusiness.bio" rows="3" class="form-input"></textarea>
+      </div>
+
+      <div class="form-grp full-width modal-actions">
+        <button class="btn-secondary" (click)="closeEditBusiness()">Cancel</button>
+        <button class="btn-primary" (click)="saveBusinessFromAdmin()">Save Profile Changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+}
+
+<app-footer></app-footer>

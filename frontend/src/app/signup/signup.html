@@ -1,0 +1,127 @@
+<div class="auth-page">
+  <div class="auth-wrapper">
+    <div class="auth-header">
+      <h1 class="auth-title">Create Your Voziba Account</h1>
+      <p class="auth-subtitle">Connect with artisanal creators or list your handcrafted works today</p>
+    </div>
+
+    <!-- Account Role Selector Cards -->
+    <div class="role-selector-container">
+      <div class="role-card" [class.selected]="role === 'consumer'" (click)="setRole('consumer')">
+        <div class="role-icon-wrapper consumer">
+          <mat-icon>person</mat-icon>
+        </div>
+        <div class="role-info">
+          <h3>Customer</h3>
+          <p>Discover handiworks, place custom orders, track progress & manage your profile</p>
+        </div>
+      </div>
+
+      <div class="role-card" [class.selected]="role === 'business_owner'" (click)="setRole('business_owner')">
+        <div class="role-icon-wrapper business">
+          <mat-icon>storefront</mat-icon>
+        </div>
+        <div class="role-info">
+          <h3>Business Owner</h3>
+          <p>Showcase handiworks, manage client orders, track revenue & customize your studio</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Signup Form -->
+    <form (ngSubmit)="onSubmit()" class="auth-form">
+      <div *ngIf="errorMessage" class="auth-alert alert-error">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ errorMessage }}</span>
+      </div>
+
+      <div *ngIf="successMessage" class="auth-alert alert-success">
+        <mat-icon>check_circle_outline</mat-icon>
+        <span>{{ successMessage }}</span>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="fullName">Full Name <span class="required">*</span></label>
+          <div class="input-with-icon">
+            <input type="text" id="fullName" [(ngModel)]="name" name="name" placeholder="e.g. Jessica Miller"
+              required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email Address <span class="required">*</span></label>
+          <div class="input-with-icon">
+            <input type="email" id="email" [(ngModel)]="email" name="email" placeholder="name@example.com" required />
+          </div>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="phone">Phone Number</label>
+          <div class="input-with-icon">
+            <input type="tel" id="phone" [(ngModel)]="phone" name="phone" placeholder="+1 (555) 000-0000" />
+          </div>
+        </div>
+
+        <div class="form-group" *ngIf="role === 'business_owner'">
+          <label for="businessName">Business / Studio Name <span class="required">*</span></label>
+          <div class="input-with-icon">
+            <input type="text" id="businessName" [(ngModel)]="businessName" name="businessName"
+              placeholder="e.g. Miller Handmade Crafts" />
+          </div>
+        </div>
+
+        <div class="form-group" *ngIf="role === 'business_owner'">
+          <label for="category">Primary Craft Category</label>
+          <div class="input-with-icon">
+            <select id="category" [(ngModel)]="category" name="category">
+              <option *ngFor="let cat of categories()" [value]="cat.name">{{ cat.name }}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="password">Password <span class="required">*</span></label>
+          <div class="input-with-icon">
+            <input type="password" id="password" [(ngModel)]="password" name="password" placeholder="••••••••"
+              required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password <span class="required">*</span></label>
+          <div class="input-with-icon">
+            <input type="password" id="confirmPassword" [(ngModel)]="confirmPassword" name="confirmPassword"
+              placeholder="••••••••" required />
+          </div>
+        </div>
+      </div>
+
+      <div class="form-checkbox">
+        <label>
+          <input type="checkbox" [(ngModel)]="agreeTerms" name="agreeTerms" />
+          <span>I agree to Voziba's <a href="javascript:void(0)">Terms of Service</a> and <a
+              href="javascript:void(0)">Privacy Policy</a></span>
+        </label>
+      </div>
+
+      <button type="submit" class="submit-btn" [class.business-btn]="role === 'business_owner'" [disabled]="isLoading">
+        <span *ngIf="!isLoading">
+          Sign Up as {{ role === 'consumer' ? 'Consumer' : 'Business Owner' }}
+          <mat-icon>arrow_forward</mat-icon>
+        </span>
+        <span *ngIf="isLoading" class="spinner-text">
+          <span class="spinner"></span> Creating Account...
+        </span>
+      </button>
+
+      <div class="auth-footer">
+        Already have an account? <a routerLink="/login" class="link-highlight">Log in here</a>
+      </div>
+    </form>
+  </div>
+</div>

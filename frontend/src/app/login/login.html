@@ -1,0 +1,82 @@
+<div class="auth-page">
+  <div class="auth-wrapper">
+    <div class="auth-header">
+      <h1 class="auth-title">Welcome Back</h1>
+      <p class="auth-subtitle">Log in to manage your orders or access your artisanal studio</p>
+    </div>
+
+    <!-- Login Mode Selector -->
+    <div class="role-selector-container">
+      <div class="role-card" [class.selected]="role === 'consumer'" (click)="setRole('consumer')">
+        <div class="role-icon-wrapper consumer">
+          <mat-icon>person</mat-icon>
+        </div>
+        <div class="role-info">
+          <h3>Consumer Portal</h3>
+          <p>Log in to view saved items, track active custom orders & update your profile</p>
+        </div>
+      </div>
+
+      <div class="role-card" [class.selected]="role === 'business_owner'" (click)="setRole('business_owner')">
+        <div class="role-icon-wrapper business">
+          <mat-icon>storefront</mat-icon>
+        </div>
+        <div class="role-info">
+          <h3>Business Owner</h3>
+          <p>Log in to receive client orders, edit listings & view studio analytics</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Login Form -->
+    <form (ngSubmit)="onSubmit()" class="auth-form">
+      <div *ngIf="errorMessage" class="auth-alert alert-error">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ errorMessage }}</span>
+      </div>
+
+      <div *ngIf="successMessage" class="auth-alert alert-success">
+        <mat-icon>check_circle_outline</mat-icon>
+        <span>{{ successMessage }}</span>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email Address <span class="required">*</span></label>
+        <div class="input-with-icon">
+          <input type="email" id="email" [(ngModel)]="email" name="email" placeholder="name@example.com" required />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="label-with-link">
+          <label for="password">Password <span class="required">*</span></label>
+          <a href="javascript:void(0)" class="forgot-link">Forgot password?</a>
+        </div>
+        <div class="input-with-icon">
+          <input type="password" id="password" [(ngModel)]="password" name="password" placeholder="************"
+            required />
+        </div>
+      </div>
+
+      <div class="form-checkbox">
+        <label>
+          <input type="checkbox" [(ngModel)]="rememberMe" name="rememberMe" />
+          <span>Keep me logged in on this device</span>
+        </label>
+      </div>
+
+      <button type="submit" class="submit-btn" [class.business-btn]="role === 'business_owner'" [disabled]="isLoading">
+        <span *ngIf="!isLoading">
+          Log In as {{ role === 'consumer' ? 'Consumer' : 'Business Owner' }}
+        </span>
+        <span *ngIf="isLoading" class="spinner-text">
+          <span class="spinner"></span> Logging In...
+        </span>
+      </button>
+
+      <div class="auth-footer">
+        Don't have an account yet? <a routerLink="/signup" class="link-highlight">Sign up here</a>
+      </div>
+    </form>
+  </div>
+</div>

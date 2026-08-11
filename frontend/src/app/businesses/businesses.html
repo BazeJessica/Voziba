@@ -1,0 +1,66 @@
+<div class="works-section-header">
+  <div class="active-filter-badge">
+    Category: <span>{{ selectedCategory }}</span>
+  </div>
+  <p class="results-count">Showing {{ filteredWorks.length }} handiworks & bespoke services</p>
+</div>
+
+@if (filteredWorks.length === 0) {
+<div class="no-results-card">
+  <mat-icon class="no-results-icon">search</mat-icon>
+  <h3>No handiworks found</h3>
+  <p>Try adjusting your search terms or select another category.</p>
+  <button class="btn-reset" (click)="worksService.setCategory('All'); worksService.setSearchQuery('')">
+    Reset Filters
+  </button>
+</div>
+} @else {
+<div class="works-grid">
+  @for (work of filteredWorks; track work.id) {
+  <div class="work-card" (click)="onViewDetails(work)">
+    <div class="card-image-wrapper">
+      <img [src]="work.img" [alt]="work.title" loading="lazy" />
+      <div class="category-tag">{{ work.category }}</div>
+      @if (work.featured) {
+      <div class="featured-badge">★ Featured</div>
+      }
+    </div>
+
+    <div class="card-content">
+      <a [routerLink]="['/business-dashboard', work.creatorName]" class="creator-header" (click)="$event.stopPropagation()" title="View Business Portal for {{ work.creatorName }}">
+        <img [src]="work.creatorAvatar" [alt]="work.creatorName" class="creator-avatar" />
+        <div class="creator-info">
+          <span class="creator-name">{{ work.creatorName }}</span>
+          <span class="creator-location"><mat-icon class="location-icon">location_on</mat-icon> {{ work.location }}</span>
+        </div>
+        <div class="rating-box">
+          <span class="star">★</span>
+          <span class="rating-val">{{ work.rating }}</span>
+          <span class="reviews-count">({{ work.reviewsCount }})</span>
+        </div>
+      </a>
+
+      <h3 class="work-title">{{ work.title }}</h3>
+      <p class="work-description">{{ work.description }}</p>
+
+      <div class="tags-row">
+        @for (tag of work.tags; track tag) {
+        <span class="tag-chip">#{{ tag }}</span>
+        }
+      </div>
+
+      <div class="card-footer">
+        <div class="price-box">
+          <span class="price-label">Price</span>
+          <span class="price-amount">${{ work.price }}</span>
+          <span class="price-type" *ngIf="work.priceType !== 'fixed'">({{ work.priceType }})</span>
+        </div>
+        <button class="btn-book" (click)="onBookNow(work, $event)">
+          Book / Order
+        </button>
+      </div>
+    </div>
+  </div>
+  }
+</div>
+}

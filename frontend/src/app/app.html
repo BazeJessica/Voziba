@@ -1,0 +1,6 @@
+<app-nav (openListWorkModal)="openAddWorkModal()"></app-nav>
+<router-outlet></router-outlet>
+
+@if (showAddWorkModal) {
+  <app-add-work-modal (close)="closeAddWorkModal()" (workAdded)="closeAddWorkModal()"></app-add-work-modal>
+}
