@@ -1,0 +1,155 @@
+<div class="browse-page">
+
+  <!-- Hero Header -->
+  <section class="browse-hero">
+    <div class="browse-hero-content">
+      <span class="section-eyebrow">Public Marketplace</span>
+      <h1>Browse All Handiworks</h1>
+      <p>
+        Explore handcrafted creations, bespoke furniture, tailored fashion, and fine artisanal goods directly from
+        verified local makers.
+      </p>
+    </div>
+  </section>
+
+  <!-- Filter & Toolbar Section -->
+  <section class="browse-toolbar-section">
+    <div class="browse-container">
+
+      <!-- Top Search & Sort Row -->
+      <div class="toolbar-controls">
+        <div class="search-box">
+          <mat-icon>search</mat-icon>
+          <input type="text" [value]="worksService.searchQuery()" (input)="onSearch($event)"
+            placeholder="Search handiworks, artisans, materials, tags..." />
+          @if (worksService.searchQuery()) {
+          <button class="clear-search" (click)="worksService.setSearchQuery('')">&times;</button>
+          }
+        </div>
+
+        <div class="sort-box">
+          <label for="sort-select"><mat-icon>sort</mat-icon> Sort by:</label>
+          <select id="sort-select" [value]="selectedSort()" (change)="onSortChange($event)">
+            <option value="recommended">Featured & Recommended</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+            <option value="rating">Highest Rated ★</option>
+            <option value="title">Title (A - Z)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Categories Filter Chips -->
+      <div class="category-chips-wrapper">
+        <span class="filter-lbl"><mat-icon>filter_alt</mat-icon> Categories:</span>
+        <div class="chips-scroll">
+          @for (cat of categories(); track cat) {
+          <button class="chip-btn" [class.active]="worksService.selectedCategory() === cat"
+            (click)="selectCategory(cat)">
+            {{ cat }}
+          </button>
+          }
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Handiworks Catalog Grid -->
+  <section class="browse-catalog-section">
+    <div class="browse-container">
+
+      <!-- Active Filter Banner -->
+      <div class="catalog-status-bar">
+        <div class="status-left">
+          <span class="active-cat-badge">
+            Category: <strong>{{ worksService.selectedCategory() }}</strong>
+          </span>
+          <span class="count-txt">Showing {{ sortedWorks().length }} handiworks</span>
+        </div>
+
+        @if (worksService.selectedCategory() !== 'All' || worksService.searchQuery()) {
+        <button class="btn-clear-all" (click)="resetFilters()">
+          <mat-icon>close</mat-icon> Clear Filters
+        </button>
+        }
+      </div>
+
+      <!-- Grid or Empty State -->
+      @if (sortedWorks().length === 0) {
+      <div class="empty-browse-card">
+        <mat-icon class="empty-icon">manage_search</mat-icon>
+        <h2>No Handiworks Match Your Filter</h2>
+        <p>We couldn't find any creations matching your search or category filter. Try clearing filters or searching for
+          another term.</p>
+        <button class="btn-reset-filters" (click)="resetFilters()">
+          <mat-icon>refresh</mat-icon> View All Handiworks
+        </button>
+      </div>
+      } @else {
+      <div class="works-grid">
+        @for (work of sortedWorks(); track work.id) {
+        <div class="work-card" (click)="openWorkDetails(work)">
+          <div class="card-image-wrapper">
+            <img [src]="work.img" [alt]="work.title" loading="lazy" />
+            <div class="category-tag">{{ work.category }}</div>
+          </div>
+
+          <div class="card-content">
+            <div class="creator-header" (click)="$event.stopPropagation()">
+              <img [src]="work.creatorAvatar" [alt]="work.creatorName" class="creator-avatar" />
+              <div class="creator-info">
+                <span class="creator-name">{{ work.creatorName }}</span>
+                <span class="creator-location"><mat-icon class="location-icon">location_on</mat-icon> {{ work.location
+                  }}</span>
+              </div>
+              <div class="rating-box">
+                <span class="star">★</span>
+                <span class="rating-val">{{ work.rating }}</span>
+                <span class="reviews-count">({{ work.reviewsCount }})</span>
+              </div>
+            </div>
+
+            <h3 class="work-title">{{ work.title }}</h3>
+            <p class="work-description">{{ work.description }}</p>
+
+            <div class="tags-row">
+              @for (tag of work.tags; track tag) {
+              <span class="tag-chip">#{{ tag }}</span>
+              }
+            </div>
+
+            <div class="card-footer">
+              <div class="price-box">
+                <span class="price-label">Price</span>
+                <span class="price-amount">${{ work.price }}</span>
+                @if (work.priceType !== 'fixed') {
+                <span class="price-type">({{ work.priceType }})</span>
+                }
+              </div>
+              <button class="btn-book" (click)="openBooking(work, $event)">
+                Book / Order
+              </button>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+      }
+
+    </div>
+  </section>
+
+</div>
+
+<!-- Modals -->
+@if (selectedWorkToBook) {
+<app-booking-modal [work]="selectedWorkToBook" (close)="closeBooking()"></app-booking-modal>
+}
+
+@if (selectedWorkDetails) {
+<app-work-detail-modal [work]="selectedWorkDetails" (close)="closeWorkDetails()"
+  (bookNow)="handleBookFromDetails($event)"></app-work-detail-modal>
+}
+
+<app-footer></app-footer>

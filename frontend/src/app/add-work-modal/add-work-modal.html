@@ -2,8 +2,8 @@
   <div class="modal-card" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <div class="header-title">
-        <h2>List Your Work or Handiwork</h2>
-        <p>Showcase your craft and receive orders or bookings from local & nationwide consumers.</p>
+        <h2>List & Showcase Your Business Work</h2>
+        <p>Upload multiple photos of your handiworks, bespoke items, or services for consumers to view and order.</p>
       </div>
       <button class="btn-close" (click)="onClose()">&times;</button>
     </div>
@@ -11,8 +11,8 @@
     <form (ngSubmit)="onSubmit()" class="modal-body">
       <div class="form-row">
         <div class="form-group flex-1">
-          <label>Handiwork Title *</label>
-          <input type="text" [(ngModel)]="title" name="title" placeholder="e.g. Hand-Carved Oak Coffee Table" required />
+          <label>Handiwork / Showcase Title *</label>
+          <input type="text" [(ngModel)]="title" name="title" placeholder="e.g. Custom Live-Edge Dining Table" required />
         </div>
 
         <div class="form-group flex-1">
@@ -32,7 +32,7 @@
         </div>
 
         <div class="form-group flex-1">
-          <label>Location / City *</label>
+          <label>Studio Location / City *</label>
           <input type="text" [(ngModel)]="location" name="location" placeholder="e.g. Seattle, WA" required />
         </div>
       </div>
@@ -58,9 +58,44 @@
         </div>
       </div>
 
-      <div class="form-group">
-        <label>Work Image URL</label>
-        <input type="url" [(ngModel)]="img" name="img" placeholder="https://images.unsplash.com/..." />
+      <!-- WORK / SHOWCASE MULTI-IMAGE UPLOAD SECTION -->
+      <div class="form-group full-width">
+        <label>Work Images & Showcase Gallery (Upload Up to 5 Photos) *</label>
+
+        <div class="image-upload-card">
+          <!-- Gallery Thumbnail Previews -->
+          <div class="gallery-previews-grid" *ngIf="gallery.length > 0">
+            @for (photo of gallery; track photo; let idx = $index) {
+              <div class="preview-box thumb-box">
+                <img [src]="photo" alt="Work gallery picture" class="preview-img" />
+                <button type="button" class="btn-remove-photo" (click)="removeGalleryImage(idx)" title="Remove photo">&times;</button>
+                <span class="cover-badge" *ngIf="idx === 0">Main Photo</span>
+              </div>
+            }
+          </div>
+
+          <div class="preview-box" (click)="multiWorkFileInput.click()" title="Click to upload showcase images" *ngIf="gallery.length === 0">
+            <img [src]="img" alt="Work showcase preview" class="preview-img" />
+            <div class="preview-overlay">
+              <mat-icon>cloud_upload</mat-icon>
+              <span>Upload Photos</span>
+            </div>
+          </div>
+
+          <div class="upload-controls flex-1">
+            <button type="button" class="btn-upload-file" (click)="multiWorkFileInput.click()">
+              <mat-icon>add_a_photo</mat-icon> Upload Pictures (Select Up to 5 Files)
+            </button>
+            <input type="file" #multiWorkFileInput (change)="onMultipleImagesUpload($event)" accept="image/*" multiple style="display: none" />
+            
+            <p class="upload-hint">You can upload multiple high-resolution photos for each handiwork or service listing.</p>
+
+            <div class="url-input-row">
+              <span class="url-label">Or enter main image URL:</span>
+              <input type="url" [(ngModel)]="img" name="img" placeholder="https://..." class="form-input-sm" />
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="form-group">
@@ -75,7 +110,9 @@
 
       <div class="modal-footer">
         <button type="button" class="btn-cancel" (click)="onClose()">Cancel</button>
-        <button type="submit" class="btn-submit">Publish Handiwork</button>
+        <button type="submit" class="btn-submit">
+          <mat-icon>publish</mat-icon> Publish Showcase Item for Consumers
+        </button>
       </div>
     </form>
   </div>

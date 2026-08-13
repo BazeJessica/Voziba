@@ -2,10 +2,18 @@
 
   <!-- LEFT ADMIN SIDEBAR -->
   <aside class="dashboard-sidebar" [class.collapsed]="sidebarCollapsed()">
-    
+
     <!-- Sidebar Business Profile Header -->
     <div class="sidebar-biz-card">
-      <img [src]="activeBusinessDetails().avatar" [alt]="activeBusinessDetails().name" class="biz-sidebar-avatar" />
+      <div class="sidebar-avatar-wrapper" (click)="sidebarFileInput.click()"
+        title="Click to upload business logo photo">
+        <img [src]="activeBusinessDetails().avatar" [alt]="activeBusinessDetails().name" class="biz-sidebar-avatar" />
+        <div class="avatar-hover-badge">
+          <mat-icon>photo_camera</mat-icon>
+        </div>
+      </div>
+      <input type="file" #sidebarFileInput (change)="onFileUpload($event)" accept="image/*" style="display: none" />
+
       <div class="biz-sidebar-info">
         <span class="portal-tag">Verified Maker Portal</span>
         <h2 class="biz-name">{{ activeBusinessDetails().name }}</h2>
@@ -56,6 +64,12 @@
         <span class="nav-text">All Order History</span>
         <span class="nav-badge badge-slate">{{ creatorBookings().length }}</span>
       </button>
+
+      <button class="sidebar-nav-item" [class.active]="activeTab() === 'works'" (click)="setTab('works')">
+        <mat-icon>photo_library</mat-icon>
+        <span class="nav-text">Published Works</span>
+        <span class="nav-badge badge-teal">{{ publishedWorks().length }}</span>
+      </button>
     </nav>
 
     <!-- Sidebar Footer Revenue Widget -->
@@ -79,7 +93,7 @@
 
   <!-- RIGHT MAIN CONTENT PANEL -->
   <main class="dashboard-main-content">
-    
+
     <!-- Top Header Bar -->
     <header class="main-header-bar">
       <div class="header-title-group">
@@ -89,7 +103,8 @@
         <div>
           @if (activeTab() === 'active') {
           <h1>Active Orders Queue</h1>
-          <p class="header-subtitle">Chronological order list for {{ activeBusinessDetails().name }}. Review customer specs, confirm requests, or switch orders to done.</p>
+          <p class="header-subtitle">Chronological order list for {{ activeBusinessDetails().name }}. Review customer
+            specs, confirm requests, or switch orders to done.</p>
           }
           @if (activeTab() === 'done') {
           <h1>Completed & Delivered Orders</h1>
@@ -97,15 +112,22 @@
           }
           @if (activeTab() === 'customers') {
           <h1>Customer CRM Directory</h1>
-          <p class="header-subtitle">Catalog of all clients who have ordered from {{ activeBusinessDetails().name }}.</p>
+          <p class="header-subtitle">Catalog of all clients who have ordered from {{ activeBusinessDetails().name }}.
+          </p>
           }
           @if (activeTab() === 'profile') {
           <h1>Edit Business Profile & Studio Info</h1>
-          <p class="header-subtitle">Manage your maker brand, studio location, category, logo photo, and craftsmanship bio.</p>
+          <p class="header-subtitle">Manage your maker brand, studio location, category, logo photo, and craftsmanship
+            bio.</p>
           }
           @if (activeTab() === 'all') {
-          <h1>Full Order Log & History</h1>
-          <p class="header-subtitle">Complete chronological record of all incoming, confirmed, completed, and cancelled requests.</p>
+          <h1>Full Order Log &amp; History</h1>
+          <p class="header-subtitle">Complete chronological record of all incoming, confirmed, completed, and cancelled
+            requests.</p>
+          }
+          @if (activeTab() === 'works') {
+          <h1>Published Works Showcase</h1>
+          <p class="header-subtitle">All handiwork listings you have published for consumers to browse and book.</p>
           }
         </div>
       </div>
@@ -159,7 +181,8 @@
       <!-- Active Orders Cards -->
       <div class="orders-list">
         @for (booking of activeOrders(); track booking.id) {
-        <div class="order-card" [class.is-pending]="booking.status === 'pending'" [class.is-confirmed]="booking.status === 'confirmed'">
+        <div class="order-card" [class.is-pending]="booking.status === 'pending'"
+          [class.is-confirmed]="booking.status === 'confirmed'">
 
           <div class="order-card-header">
             <div class="order-id-group">
@@ -169,7 +192,8 @@
               </span>
             </div>
 
-            <div class="status-pill" [class.pill-pending]="booking.status === 'pending'" [class.pill-confirmed]="booking.status === 'confirmed'">
+            <div class="status-pill" [class.pill-pending]="booking.status === 'pending'"
+              [class.pill-confirmed]="booking.status === 'confirmed'">
               <span class="status-pulse"></span>
               {{ booking.status === 'pending' ? 'Pending Approval' : 'Confirmed & In Progress' }}
             </div>
@@ -339,7 +363,8 @@
             </div>
             <div class="cust-title">
               <h3>{{ customer.name }}</h3>
-              <span class="cust-orders-count">{{ customer.totalOrders }} {{ customer.totalOrders === 1 ? 'Order' : 'Orders' }}</span>
+              <span class="cust-orders-count">{{ customer.totalOrders }} {{ customer.totalOrders === 1 ? 'Order' :
+                'Orders' }}</span>
             </div>
           </div>
 
@@ -366,7 +391,8 @@
           </div>
 
           <div class="cust-card-actions">
-            <a [href]="'mailto:' + customer.email + '?subject=Inquiry regarding your order with ' + selectedCreator()" class="btn-email-customer">
+            <a [href]="'mailto:' + customer.email + '?subject=Inquiry regarding your order with ' + selectedCreator()"
+              class="btn-email-customer">
               <mat-icon>send</mat-icon> Email Customer
             </a>
           </div>
@@ -375,7 +401,8 @@
         <div class="empty-state-box">
           <mat-icon>people_outline</mat-icon>
           <h3>No Customers Recorded Yet</h3>
-          <p>Customers who place orders with {{ activeBusinessDetails().name }} will automatically be cataloged here.</p>
+          <p>Customers who place orders with {{ activeBusinessDetails().name }} will automatically be cataloged here.
+          </p>
         </div>
         }
       </div>
@@ -398,19 +425,47 @@
       <div class="form-grid">
         <!-- Logo & Preset selector -->
         <div class="form-group full-width avatar-select-group">
-          <label>Business Logo / Photo URL *</label>
-          <input type="text" [(ngModel)]="editProfileForm().avatar" placeholder="https://..." class="form-input" />
+          <label>Business Logo / Profile Photo *</label>
+
+          <div class="avatar-upload-box">
+            <div class="avatar-preview-circle" (click)="formFileInput.click()"
+              title="Click to select custom image file">
+              <img [src]="editProfileForm().avatar" [alt]="editProfileForm().name" class="form-avatar-img" />
+              <div class="preview-overlay">
+                <mat-icon>cloud_upload</mat-icon>
+              </div>
+            </div>
+
+            <div class="upload-action-details">
+              <button type="button" class="btn-upload-file" (click)="formFileInput.click()">
+                <mat-icon>upload_file</mat-icon> Upload Photo of Your Choice
+              </button>
+              <input type="file" #formFileInput (change)="onFileUpload($event)" accept="image/*"
+                style="display: none" />
+
+              <p class="upload-hint">Upload custom business logo, portrait, or studio photo (PNG, JPG, WEBP, GIF).</p>
+
+              <div class="url-input-row">
+                <span class="url-label">Or enter image URL:</span>
+                <input type="text" [(ngModel)]="editProfileForm().avatar" placeholder="https://..."
+                  class="form-input" />
+              </div>
+            </div>
+          </div>
+
           <div class="preset-thumbs">
-            <span class="preset-label">Quick Preset Pickers:</span>
+            <span class="preset-label">Or pick from curated business presets:</span>
             @for (preset of avatarPresets; track preset) {
-            <img [src]="preset" [class.selected]="editProfileForm().avatar === preset" (click)="selectAvatarPreset(preset)" class="preset-thumb" />
+            <img [src]="preset" [class.selected]="editProfileForm().avatar === preset"
+              (click)="selectAvatarPreset(preset)" class="preset-thumb" />
             }
           </div>
         </div>
 
         <div class="form-group">
           <label>Business / Maker Name *</label>
-          <input type="text" [(ngModel)]="editProfileForm().name" placeholder="e.g. Elias & Co. Woodworks" class="form-input" />
+          <input type="text" [(ngModel)]="editProfileForm().name" placeholder="e.g. Elias & Co. Woodworks"
+            class="form-input" />
         </div>
 
         <div class="form-group">
@@ -429,17 +484,20 @@
 
         <div class="form-group">
           <label>Studio Location / City, State</label>
-          <input type="text" [(ngModel)]="editProfileForm().location" placeholder="e.g. Portland, OR" class="form-input" />
+          <input type="text" [(ngModel)]="editProfileForm().location" placeholder="e.g. Portland, OR"
+            class="form-input" />
         </div>
 
         <div class="form-group">
           <label>Established Year</label>
-          <input type="text" [(ngModel)]="editProfileForm().establishedYear" placeholder="e.g. 2018" class="form-input" />
+          <input type="text" [(ngModel)]="editProfileForm().establishedYear" placeholder="e.g. 2018"
+            class="form-input" />
         </div>
 
         <div class="form-group">
           <label>Business Contact Email</label>
-          <input type="email" [(ngModel)]="editProfileForm().email" placeholder="contact@yourbusiness.com" class="form-input" />
+          <input type="email" [(ngModel)]="editProfileForm().email" placeholder="contact@yourbusiness.com"
+            class="form-input" />
         </div>
 
         <div class="form-group">
@@ -449,12 +507,15 @@
 
         <div class="form-group full-width">
           <label>Hours of Operation / Operating Schedule</label>
-          <input type="text" [(ngModel)]="editProfileForm().businessHours" placeholder="e.g. Mon - Fri: 8:00 AM - 6:00 PM" class="form-input" />
+          <input type="text" [(ngModel)]="editProfileForm().businessHours"
+            placeholder="e.g. Mon - Fri: 8:00 AM - 6:00 PM" class="form-input" />
         </div>
 
         <div class="form-group full-width">
           <label>Business Bio & Craftsmanship Story</label>
-          <textarea [(ngModel)]="editProfileForm().bio" rows="4" placeholder="Tell customers about your workshop heritage, materials, technique, and quality standards..." class="form-input textarea-input"></textarea>
+          <textarea [(ngModel)]="editProfileForm().bio" rows="4"
+            placeholder="Tell customers about your workshop heritage, materials, technique, and quality standards..."
+            class="form-input textarea-input"></textarea>
         </div>
       </div>
 
@@ -500,12 +561,132 @@
     </section>
     }
 
+    <!-- STAGE 6: PUBLISHED WORKS GALLERY -->
+    @if (activeTab() === 'works') {
+    <section class="stage-section" (click)="closeAllWorkMenus()">
+      @if (publishedWorks().length === 0) {
+      <div class="works-empty-state">
+        <!-- Decorative background blobs -->
+        <div class="wes-blob wes-blob-1"></div>
+        <div class="wes-blob wes-blob-2"></div>
+
+        <!-- Icon badge -->
+        <div class="wes-icon-ring">
+          <div class="wes-icon-inner">
+            <mat-icon>photo_library</mat-icon>
+          </div>
+        </div>
+
+        <!-- Copy -->
+        <h2 class="wes-title">Your Showcase Awaits</h2>
+        <p class="wes-subtitle">
+          Publish your first work listing so consumers can discover,
+          admire, and book your handicraft from the marketplace.
+        </p>
+
+        <!-- CTA Button -->
+        <button class="wes-cta-btn" (click)="openAddWorkModal()">
+          <mat-icon>add_photo_alternate</mat-icon>
+          <span>Publish Your First Work</span>
+          <mat-icon class="arrow-icon">arrow_forward</mat-icon>
+        </button>
+
+      </div>
+      }
+
+      <div class="works-gallery-grid">
+        @for (work of publishedWorks(); track work.id) {
+        <div class="work-gallery-card">
+
+          <!-- Card Image -->
+          <div class="wgc-image-wrap">
+            <img [src]="work.img" [alt]="work.title" class="wgc-image" />
+            <span class="wgc-category-badge">{{ work.category }}</span>
+
+            <!-- Hamburger Menu Trigger -->
+            <button class="wgc-menu-btn" id="work-menu-{{ work.id }}" (click)="toggleWorkMenu(work.id, $event)"
+              title="Options">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+
+            <!-- Dropdown Context Menu -->
+            @if (openWorkMenuId === work.id) {
+            <div class="wgc-dropdown" (click)="$event.stopPropagation()">
+              <button class="wgc-menu-item" (click)="viewHandiwork(work.id); openWorkMenuId = null">
+                <mat-icon>visibility</mat-icon> View Details
+              </button>
+              <button class="wgc-menu-item" (click)="startEditWork(work, $event)">
+                <mat-icon>edit</mat-icon> Edit Work
+              </button>
+              <button class="wgc-menu-item wgc-menu-delete" (click)="deletePublishedWork(work, $event)">
+                <mat-icon>delete</mat-icon> Delete
+              </button>
+            </div>
+            }
+          </div>
+
+          <!-- Inline Edit Panel -->
+          @if (editingWorkId === work.id) {
+          <div class="wgc-edit-panel" (click)="$event.stopPropagation()">
+            <h4 class="wgc-edit-title"><mat-icon>edit_note</mat-icon> Edit Work Details</h4>
+            <label>Title</label>
+            <input type="text" [(ngModel)]="editWorkDraft['title']" class="wgc-input" placeholder="Work title" />
+            <label>Price ($)</label>
+            <input type="number" [(ngModel)]="editWorkDraft['price']" class="wgc-input" placeholder="Price" />
+            <label>Description</label>
+            <textarea [(ngModel)]="editWorkDraft['description']" class="wgc-input wgc-textarea" rows="3"
+              placeholder="Description"></textarea>
+            <div class="wgc-edit-actions">
+              <button class="btn-action confirm-btn" (click)="saveEditWork(work.id)">
+                <mat-icon>save</mat-icon> Save
+              </button>
+              <button class="btn-action deny-btn" (click)="cancelEditWork()">
+                <mat-icon>close</mat-icon> Cancel
+              </button>
+            </div>
+          </div>
+          }
+
+          <!-- Card Info (shown only when not editing) -->
+          @if (editingWorkId !== work.id) {
+          <div class="wgc-info">
+            <h3 class="wgc-title">{{ work.title }}</h3>
+            <div class="wgc-meta-row">
+              <span class="wgc-category"><mat-icon>category</mat-icon> {{ work.category }}</span>
+              <span class="wgc-price">${{ work.price | number:'1.0-0' }}</span>
+            </div>
+            <p class="wgc-desc">{{ work.description }}</p>
+            <div class="wgc-tags">
+              @for (tag of work.tags; track tag) {
+              <span class="wgc-tag">#{{ tag }}</span>
+              }
+            </div>
+            <div class="wgc-stats">
+              <span><mat-icon>star</mat-icon> {{ work.rating }}</span>
+              <span><mat-icon>reviews</mat-icon> {{ work.reviewsCount }} reviews</span>
+              <span><mat-icon>schedule</mat-icon> {{ work.turnaround }}</span>
+            </div>
+          </div>
+          }
+        </div>
+        }
+      </div>
+    </section>
+    }
+
   </main>
 </div>
 
-<!-- Modal Popups for Viewing Work Details -->
+<!-- Modal Popups for Viewing Work Details & Adding Work Showcase -->
 @if (selectedWorkForDetails) {
 <app-work-detail-modal [work]="selectedWorkForDetails" (close)="closeWorkDetailsModal()"></app-work-detail-modal>
+}
+
+@if (showAddWorkModal()) {
+<app-add-work-modal [initialCreatorName]="userService.profile().name || activeBusinessDetails().name"
+  [initialCreatorAvatar]="activeBusinessDetails().avatar" [initialLocation]="activeBusinessDetails().location"
+  (close)="closeAddWorkModal()" (workAdded)="onWorkAdded()">
+</app-add-work-modal>
 }
 
 <app-footer></app-footer>

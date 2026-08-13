@@ -21,13 +21,10 @@
     <div class="card-image-wrapper">
       <img [src]="work.img" [alt]="work.title" loading="lazy" />
       <div class="category-tag">{{ work.category }}</div>
-      @if (work.featured) {
-      <div class="featured-badge">★ Featured</div>
-      }
     </div>
 
     <div class="card-content">
-      <a [routerLink]="['/business-dashboard', work.creatorName]" class="creator-header" (click)="$event.stopPropagation()" title="View Business Portal for {{ work.creatorName }}">
+      <div class="creator-header" (click)="$event.stopPropagation()">
         <img [src]="work.creatorAvatar" [alt]="work.creatorName" class="creator-avatar" />
         <div class="creator-info">
           <span class="creator-name">{{ work.creatorName }}</span>
@@ -38,7 +35,7 @@
           <span class="rating-val">{{ work.rating }}</span>
           <span class="reviews-count">({{ work.reviewsCount }})</span>
         </div>
-      </a>
+      </div>
 
       <h3 class="work-title">{{ work.title }}</h3>
       <p class="work-description">{{ work.description }}</p>

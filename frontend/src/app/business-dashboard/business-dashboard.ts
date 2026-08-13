@@ -41,7 +41,7 @@ export class BusinessDashboardComponent implements OnInit {
 
   // State Signals
   selectedCreator = signal<string>('Elias & Co. Woodworks');
-  activeTab = signal<'active' | 'done' | 'customers' | 'profile' | 'all'>('active');
+  activeTab = signal<'active' | 'done' | 'customers' | 'profile' | 'all' | 'works'>('active');
   sortOrder = signal<'bookingDateAsc' | 'bookingDateDesc' | 'createdDesc'>('bookingDateAsc');
   searchQuery = signal<string>('');
   toastMessage = signal<string>('');
@@ -49,6 +49,11 @@ export class BusinessDashboardComponent implements OnInit {
 
   // Selected work for modal details
   selectedWorkForDetails: workType | null = null;
+
+  // Work context menu & edit panel state
+  openWorkMenuId: number | string | null = null;
+  editingWorkId: number | string | null = null;
+  editWorkDraft: Partial<workType> = {};
 
   // Edit Business Profile Form State
   editProfileForm = signal<businessProfileType>({
@@ -93,8 +98,21 @@ export class BusinessDashboardComponent implements OnInit {
     const reviewsCount = sampleWork ? sampleWork.reviewsCount : 34;
     const totalWorks = works.filter(w => w.creatorName === creator).length;
 
+    // When viewing their own business, always prefer the user's real avatar
+    // and name so the sidebar stays in sync with the nav/profile.
+    const ownerProfile = this.userService.profile();
+    const isOwnerView = creator.toLowerCase() === ownerProfile.name.toLowerCase()
+      || creator === 'All Creators';
+
+    const defaultAvatar = 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=150&q=80';
+    const avatar = isOwnerView && ownerProfile.avatar && ownerProfile.avatar !== defaultAvatar
+      ? ownerProfile.avatar
+      : (profile.avatar && profile.avatar !== defaultAvatar ? profile.avatar : ownerProfile.avatar || profile.avatar);
+
     return {
       ...profile,
+      name: isOwnerView ? (ownerProfile.name || profile.name) : profile.name,
+      avatar,
       rating,
       reviewsCount,
       totalWorks
@@ -202,6 +220,16 @@ export class BusinessDashboardComponent implements OnInit {
   });
 
   ngOnInit() {
+    // Role protection: Ensure consumer users cannot access business owner dashboard
+    if (this.userService.isLoggedIn() && this.userService.userRole() === 'consumer') {
+      this.router.navigate(['/profile']);
+      return;
+    }
+    if (!this.userService.isLoggedIn()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
     this.route.paramMap.subscribe(params => {
       const paramName = params.get('businessName');
       if (paramName) {
@@ -213,7 +241,9 @@ export class BusinessDashboardComponent implements OnInit {
           this.selectedCreator.set(decoded);
         }
       } else {
-        this.selectedCreator.set('All Creators');
+        // Default to the logged-in business owner's registered name
+        const ownerName = this.userService.profile().name;
+        this.selectedCreator.set(ownerName || 'All Creators');
       }
       // Populate profile form for current business
       this.initProfileForm();
@@ -237,10 +267,82 @@ export class BusinessDashboardComponent implements OnInit {
     }
   }
 
-  setTab(tab: 'active' | 'done' | 'customers' | 'profile' | 'all') {
+  // Add Work Showcase Modal State
+  readonly showAddWorkModal = signal<boolean>(false);
+
+  openAddWorkModal() {
+    this.showAddWorkModal.set(true);
+  }
+
+  closeAddWorkModal() {
+    this.showAddWorkModal.set(false);
+  }
+
+  onWorkAdded() {
+    this.showToast('New handiwork showcase photo published for consumers successfully!');
+  }
+
+  setTab(tab: 'active' | 'done' | 'customers' | 'profile' | 'all' | 'works') {
     this.activeTab.set(tab);
     if (tab === 'profile') {
       this.initProfileForm();
+    }
+    this.openWorkMenuId = null;
+    this.editingWorkId = null;
+  }
+
+  // Published Works — always scoped to the logged-in business owner's name,
+  // so it shows ALL their works regardless of URL / selectedCreator state.
+  publishedWorks = computed(() => {
+    const ownerName = this.userService.profile().name.trim();
+    const allWorks = this.worksService.works();
+    // Filter by owner name (case-insensitive) so newly published works appear instantly
+    const owned = allWorks.filter(w => w.creatorName.toLowerCase() === ownerName.toLowerCase());
+    // If the owner has no matched works yet (new account / name mismatch),
+    // fall back to the currently selectedCreator so the section is never empty
+    if (owned.length === 0 && this.selectedCreator() !== 'All Creators') {
+      return allWorks.filter(w => w.creatorName === this.selectedCreator());
+    }
+    return owned;
+  });
+
+  // Work context menu
+  toggleWorkMenu(id: number | string, event: Event) {
+    event.stopPropagation();
+    this.openWorkMenuId = this.openWorkMenuId === id ? null : id;
+    this.editingWorkId = null;
+  }
+
+  closeAllWorkMenus() {
+    this.openWorkMenuId = null;
+  }
+
+  // Start inline editing a work
+  startEditWork(work: workType, event: Event) {
+    event.stopPropagation();
+    this.editingWorkId = work.id;
+    this.editWorkDraft = { title: work.title, description: work.description, price: work.price, tags: [...work.tags] };
+    this.openWorkMenuId = null;
+  }
+
+  cancelEditWork() {
+    this.editingWorkId = null;
+    this.editWorkDraft = {};
+  }
+
+  saveEditWork(workId: number | string) {
+    this.worksService.updateWork(workId, this.editWorkDraft);
+    this.editingWorkId = null;
+    this.editWorkDraft = {};
+    this.showToast('Work updated successfully!');
+  }
+
+  deletePublishedWork(work: workType, event: Event) {
+    event.stopPropagation();
+    if (confirm(`Delete "${work.title}" from your published works? This cannot be undone.`)) {
+      this.worksService.deleteWork(work.id);
+      this.openWorkMenuId = null;
+      this.showToast(`"${work.title}" has been removed.`);
     }
   }
 
@@ -280,6 +382,28 @@ export class BusinessDashboardComponent implements OnInit {
     this.editProfileForm.update(f => ({ ...f, avatar: url }));
   }
 
+  onFileUpload(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const base64Url = e.target?.result as string;
+        if (base64Url) {
+          this.editProfileForm.update(f => ({ ...f, avatar: base64Url }));
+          
+          // Also persist photo update immediately for current business
+          const currentName = this.selectedCreator();
+          const currentProfile = this.worksService.getBusinessProfile(currentName);
+          const updatedProfile = { ...currentProfile, avatar: base64Url };
+          this.worksService.updateBusinessProfile(currentName, updatedProfile);
+          this.showToast('Business photo updated successfully!');
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
   // Business Owner Workflow Actions
   confirmOrder(booking: bookingType) {
     this.worksService.updateBookingStatus(booking.id, 'confirmed');
@@ -303,7 +427,7 @@ export class BusinessDashboardComponent implements OnInit {
     this.showToast(`Order #${booking.id} moved back to Active Orders.`);
   }
 
-  viewHandiwork(workId: number) {
+  viewHandiwork(workId: number | string) {
     const work = this.worksService.getWorkById(workId);
     if (work) {
       this.selectedWorkForDetails = work;
