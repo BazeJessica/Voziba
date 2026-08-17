@@ -1,0 +1,119 @@
+<div class="modal-backdrop" (click)="onClose()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="header-title">
+        <h2>List & Showcase Your Business Work</h2>
+        <p>Upload multiple photos of your handiworks, bespoke items, or services for consumers to view and order.</p>
+      </div>
+      <button class="btn-close" (click)="onClose()">&times;</button>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" class="modal-body">
+      <div class="form-row">
+        <div class="form-group flex-1">
+          <label>Handiwork / Showcase Title *</label>
+          <input type="text" [(ngModel)]="title" name="title" placeholder="e.g. Custom Live-Edge Dining Table" required />
+        </div>
+
+        <div class="form-group flex-1">
+          <label>Creator / Business Name *</label>
+          <input type="text" [(ngModel)]="creatorName" name="creatorName" placeholder="e.g. Master Woodcraft Studio" required />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group flex-1">
+          <label>Category *</label>
+          <select [(ngModel)]="category" name="category" required>
+            @for (cat of categories; track cat.id) {
+              <option [value]="cat.name">{{ cat.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group flex-1">
+          <label>Studio Location / City *</label>
+          <input type="text" [(ngModel)]="location" name="location" placeholder="e.g. Seattle, WA" required />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group flex-1">
+          <label>Price ($ USD) *</label>
+          <input type="number" [(ngModel)]="price" name="price" placeholder="e.g. 250" min="1" required />
+        </div>
+
+        <div class="form-group flex-1">
+          <label>Pricing Structure</label>
+          <select [(ngModel)]="priceType" name="priceType">
+            <option value="fixed">Fixed Price</option>
+            <option value="starting">Starting From</option>
+            <option value="hourly">Hourly Rate</option>
+          </select>
+        </div>
+
+        <div class="form-group flex-1">
+          <label>Turnaround Time</label>
+          <input type="text" [(ngModel)]="turnaround" name="turnaround" placeholder="e.g. 3 - 5 business days" />
+        </div>
+      </div>
+
+      <!-- WORK / SHOWCASE MULTI-IMAGE UPLOAD SECTION -->
+      <div class="form-group full-width">
+        <label>Work Images & Showcase Gallery (Upload Up to 5 Photos) *</label>
+
+        <div class="image-upload-card">
+          <!-- Gallery Thumbnail Previews -->
+          <div class="gallery-previews-grid" *ngIf="gallery.length > 0">
+            @for (photo of gallery; track photo; let idx = $index) {
+              <div class="preview-box thumb-box">
+                <img [src]="photo" alt="Work gallery picture" class="preview-img" />
+                <button type="button" class="btn-remove-photo" (click)="removeGalleryImage(idx)" title="Remove photo">&times;</button>
+                <span class="cover-badge" *ngIf="idx === 0">Main Photo</span>
+              </div>
+            }
+          </div>
+
+          <div class="preview-box" (click)="multiWorkFileInput.click()" title="Click to upload showcase images" *ngIf="gallery.length === 0">
+            <img [src]="img" alt="Work showcase preview" class="preview-img" />
+            <div class="preview-overlay">
+              <mat-icon>cloud_upload</mat-icon>
+              <span>Upload Photos</span>
+            </div>
+          </div>
+
+          <div class="upload-controls flex-1">
+            <button type="button" class="btn-upload-file" (click)="multiWorkFileInput.click()">
+              <mat-icon>add_a_photo</mat-icon> Upload Pictures (Select Up to 5 Files)
+            </button>
+            <input type="file" #multiWorkFileInput (change)="onMultipleImagesUpload($event)" accept="image/*" multiple style="display: none" />
+            
+            <p class="upload-hint">You can upload multiple high-resolution photos for each handiwork or service listing.</p>
+
+            <div class="url-input-row">
+              <span class="url-label">Or enter main image URL:</span>
+              <input type="url" [(ngModel)]="img" name="img" placeholder="https://..." class="form-input-sm" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Description & Materials *</label>
+        <textarea [(ngModel)]="description" name="description" rows="3" placeholder="Describe the materials, craftsmanship process, custom options, and specifications..." required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Tags (Comma separated)</label>
+        <input type="text" [(ngModel)]="tagsInput" name="tagsInput" placeholder="e.g. Solid Wood, Custom Order, Handcrafted, Eco-friendly" />
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" (click)="onClose()">Cancel</button>
+        <button type="submit" class="btn-submit">
+          <mat-icon>publish</mat-icon> Publish Showcase Item for Consumers
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

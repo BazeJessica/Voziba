@@ -1,0 +1,137 @@
+<div class="main-container">
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <div class="hero-badge">Authentic Handiworks & Crafts</div>
+      <h1 class="hero-text">Discover & Book Custom Handiworks From Local Creators</h1>
+      <p class="hero-subtext">
+        Connect directly with master woodworkers, bespoke tailors, ceramic artists, and skilled craftspeople to order
+        custom creations.
+      </p>
+
+      <div class="hero-actions">
+        <button class="btn-primary-teal" (click)="goToBrowse()">
+          <mat-icon>explore</mat-icon> Explore All Handiworks
+        </button>
+
+        <button class="btn-accent-gold" (click)="openAddWork()">
+          <mat-icon>add</mat-icon> List Your Work
+        </button>
+      </div>
+
+      <div class="search-container">
+        <mat-icon class="search-icon">search</mat-icon>
+        <input type="text" placeholder="Search handiworks (e.g. walnut table, leather bag, custom suit)..."
+          [value]="searchQuery" (input)="onSearchInput($event)" (keyup.enter)="onSearchSubmit()" />
+        <button type="button" class="submitbtn" (click)="onSearchSubmit()">Search</button>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat-item">
+          <strong>500+</strong>
+          <span>Verified Artisans</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <strong>1,200+</strong>
+          <span>Custom Works Listed</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <strong>4.9 ★</strong>
+          <span>Consumer Rating</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Categories Section -->
+  <section id="categories" class="categories-section">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-tag">EXPLORE</span>
+        <h2 class="categories-title">Browse by Craft Category</h2>
+        <p class="categories-subtitle">
+          Select a craft category to filter handiworks and discover custom local talent
+        </p>
+      </div>
+      <app-category [limit]="6"></app-category>
+    </div>
+  </section>
+
+  <!-- Featured Works Section -->
+  <section id="works" class="business-section">
+    <div class="section-container">
+      <div class="section-header marketplace-header-flex">
+        <div>
+          <span class="section-tag">MARKETPLACE</span>
+          <h2 class="business-title">Available Handiworks & Custom Orders</h2>
+          <p class="business-subtitle">Explore bespoke creations ready for immediate booking or custom orders</p>
+        </div>
+        <button class="btn-explore-catalog" (click)="goToBrowse()">
+          <mat-icon>grid_view</mat-icon> Explore All Handiworks
+        </button>
+      </div>
+
+      <app-businesses (selectWorkToBook)="openBooking($event)"
+        (selectWorkDetails)="openWorkDetails($event)"></app-businesses>
+    </div>
+  </section>
+
+  <!-- Service Connect / Why Choose Us -->
+  <section id="why-us" class="serviceConnect">
+    <div class="section-container">
+      <div class="section-header text-light">
+        <span class="section-tag-light">WHY VOZIBA</span>
+        <h2 class="sConnect-title">Why Consumers & Creators Trust Voziba</h2>
+        <p class="sConnect-subtitle">
+          We bridge the gap between consumers wanting authentic handiworks and talented artisans.
+        </p>
+      </div>
+
+      <div class="sConnect-wrapper">
+        @for (item of valueItems; track $index) {
+        <div class="sConnect-content">
+          <div class="value-icon">{{ item.icon }}</div>
+          <h3 class="sConnect-card-title">{{ item.title }}</h3>
+          <p class="sConnect-description">{{ item.description }}</p>
+        </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonies Section -->
+  <section class="testimonies-section">
+    <div class="section-container">
+      <div class="section-header">
+        <span class="section-tag">REVIEWS</span>
+        <h2 class="testimonies-title">What Our Community Says</h2>
+        <p class="testimonies-subtitle">
+          Join thousands of satisfied consumers and creators who trade on Voziba
+        </p>
+      </div>
+
+      <div class="testimonials-container">
+        <app-testimonies></app-testimonies>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modals -->
+  @if (showAddWorkModal) {
+  <app-add-work-modal (close)="closeAddWork()" (workAdded)="closeAddWork()"></app-add-work-modal>
+  }
+
+  @if (selectedWorkToBook) {
+  <app-booking-modal [work]="selectedWorkToBook" (close)="closeBooking()"></app-booking-modal>
+  }
+
+  @if (selectedWorkDetails) {
+  <app-work-detail-modal [work]="selectedWorkDetails" (close)="closeWorkDetails()"
+    (bookNow)="handleBookFromDetails($event)"></app-work-detail-modal>
+  }
+
+  <!-- Footer -->
+  <app-footer></app-footer>
+</div>

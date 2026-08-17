@@ -1,0 +1,59 @@
+<div class="modal-backdrop" (click)="onClose()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="header-tag">{{ work.category }}</div>
+      <button class="btn-close" (click)="onClose()">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="detail-grid">
+        <div class="image-gallery-col">
+          <img [src]="work.img" [alt]="work.title" class="main-image" />
+        </div>
+
+        <div class="info-col">
+          <div class="creator-badge-link">
+            <div class="creator-badge">
+              <img [src]="work.creatorAvatar" [alt]="work.creatorName" class="creator-avatar" />
+              <div class="creator-meta">
+                <span class="creator-name">{{ work.creatorName }}</span>
+                <span class="creator-loc"> {{ work.location }}</span>
+              </div>
+              <div class="rating-pill">★ {{ work.rating }} ({{ work.reviewsCount }} reviews)</div>
+            </div>
+          </div>
+
+          <h2 class="detail-title">{{ work.title }}</h2>
+
+          <div class="price-banner">
+            <div class="price-text">
+              <span class="label">Price</span>
+              <span class="amount">${{ work.price }}</span>
+              <span class="price-type" *ngIf="work.priceType !== 'fixed'">({{ work.priceType }})</span>
+            </div>
+            <div class="turnaround-text">
+              <span class="label">Turnaround Time</span>
+              <span class="val">{{ work.turnaround }}</span>
+            </div>
+          </div>
+
+          <div class="description-block">
+            <h3>Craftsmanship & Details</h3>
+            <p>{{ work.description }}</p>
+          </div>
+
+          <div class="tags-block">
+            @for (t of work.tags; track t) {
+              <span class="tag-chip">#{{ t }}</span>
+            }
+          </div>
+
+          <div class="action-footer">
+            <button class="btn-secondary" (click)="onClose()">Back to Browsing</button>
+            <button class="btn-primary" (click)="onBook()">Book / Order Now (${{ work.price }})</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,448 @@
+<div class="profile-page-container">
+  <!-- Profile Header Hero -->
+  <div class="profile-header-card">
+    <div class="profile-banner"></div>
+
+    <div class="profile-header-main">
+      <div class="avatar-container">
+        <img [src]="user().avatar" [alt]="user().name" class="profile-avatar" />
+        <span class="consumer-badge" title="Verified Consumer">Consumer</span>
+      </div>
+
+      <div class="profile-identity">
+        <div class="identity-top">
+          <h1 class="user-name">{{ user().name }}</h1>
+          <span class="member-tag">
+            <mat-icon>verified</mat-icon> Member since {{ user().joinedDate }}
+          </span>
+        </div>
+        <p class="user-email">
+          <mat-icon>email</mat-icon> {{ user().email }}
+          <span class="bullet">•</span>
+          <mat-icon>location_on</mat-icon> {{ user().city || user().address }}
+        </p>
+        <p class="user-bio-preview">{{ user().bio }}</p>
+      </div>
+    </div>
+
+    <!-- Quick Stats Bar -->
+    <div class="profile-stats-bar">
+      <div class="stat-card">
+        <div class="stat-icon icon-teal">
+          <mat-icon>bookmark_border</mat-icon>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{{ totalBookingsCount() }}</span>
+          <span class="stat-label">Total Bookings</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon icon-amber">
+          <mat-icon>hourglass_empty</mat-icon>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{{ pendingCount() + confirmedCount() }}</span>
+          <span class="stat-label">Active Orders</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon icon-green">
+          <mat-icon>task_alt</mat-icon>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{{ completedCount() }}</span>
+          <span class="stat-label">Completed</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon icon-purple">
+          <mat-icon>payments</mat-icon>
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">${{ totalSpent() | number:'1.0-2' }}</span>
+          <span class="stat-label">Total Spent</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="profile-tabs-nav">
+      <button class="tab-btn" [class.active]="activeTab === 'details'" (click)="switchTab('details')">
+        <mat-icon>person</mat-icon> Personal Details
+      </button>
+      <button class="tab-btn" [class.active]="activeTab === 'bookings'" (click)="switchTab('bookings')">
+        <mat-icon>receipt_long</mat-icon> My Bookings & Orders
+        <span class="tab-count-badge">{{ totalBookingsCount() }}</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Success Notification Toast -->
+  @if (saveSuccessMessage) {
+  <div class="toast-success">
+    <mat-icon>check_circle</mat-icon>
+    <span>{{ saveSuccessMessage }}</span>
+  </div>
+  }
+
+  <!-- TAB 1: Personal Details Content -->
+  @if (activeTab === 'details') {
+  <div class="tab-content details-tab-content">
+
+    <!-- VIEW MODE -->
+    @if (!isEditing) {
+    <div class="details-card-wrapper">
+      <div class="details-section-header">
+        <h2>Consumer Personal Information</h2>
+      </div>
+
+      <div class="details-grid">
+        <div class="detail-item">
+          <label><mat-icon>badge</mat-icon> Full Name</label>
+          <div class="detail-value">{{ user().name }}</div>
+        </div>
+
+        <div class="detail-item">
+          <label><mat-icon>mail</mat-icon> Email Address</label>
+          <div class="detail-value">{{ user().email }}</div>
+        </div>
+
+        <div class="detail-item">
+          <label><mat-icon>phone</mat-icon> Phone Number</label>
+          <div class="detail-value">{{ user().phone || 'Not specified' }}</div>
+        </div>
+
+        <div class="detail-item">
+          <label><mat-icon>home</mat-icon> Street Address</label>
+          <div class="detail-value">{{ user().address || 'Not specified' }}</div>
+        </div>
+
+        <div class="detail-item">
+          <label><mat-icon>location_city</mat-icon> City & State</label>
+          <div class="detail-value">{{ user().city || 'Not specified' }}</div>
+        </div>
+
+        <div class="detail-item">
+          <label><mat-icon>public</mat-icon> Country</label>
+          <div class="detail-value">{{ user().country || 'Not specified' }}</div>
+        </div>
+      </div>
+
+      <div class="detail-full-width">
+        <label><mat-icon>notes</mat-icon> About / Craft Preferences</label>
+        <div class="detail-bio">{{ user().bio || 'No bio added yet.' }}</div>
+      </div>
+
+      <div class="detail-full-width">
+        <label><mat-icon>category</mat-icon> Preferred Craft Categories</label>
+        <div class="category-chips">
+          @for (cat of user().preferredCategories; track cat) {
+          <span class="cat-chip"><mat-icon>check</mat-icon> {{ cat }}</span>
+          } @empty {
+          <span class="no-cats">No category preferences selected yet.</span>
+          }
+        </div>
+      </div>
+    </div>
+    }
+
+    <!-- EDIT MODE -->
+    @else {
+    <div class="details-card-wrapper edit-mode-active">
+      <div class="details-section-header">
+        <h2>Edit Consumer Profile</h2>
+        <div class="header-actions-sm">
+          <button class="btn-save-profile" (click)="saveProfile()">
+            <mat-icon>check</mat-icon> Save Changes
+          </button>
+          <button class="btn-cancel-edit" (click)="cancelEditing()">
+            <mat-icon>close</mat-icon> Cancel
+          </button>
+        </div>
+      </div>
+
+      <form (ngSubmit)="saveProfile()" class="edit-form">
+        <!-- Avatar Change Section -->
+        <div class="avatar-edit-section">
+          <div class="avatar-preview">
+            <img [src]="editForm.avatar" [alt]="editForm.name" />
+          </div>
+          <div class="avatar-controls">
+            <label class="form-label">Profile Avatar</label>
+            <input type="text" class="form-input" [(ngModel)]="editForm.avatar" name="avatarUrl"
+              placeholder="Paste Image URL" />
+            <button type="button" class="btn-preset-avatar" (click)="showAvatarPicker = !showAvatarPicker">
+              <mat-icon>photo_library</mat-icon> Pick from Sample Avatars
+            </button>
+          </div>
+        </div>
+
+        @if (showAvatarPicker) {
+        <div class="avatar-picker-grid">
+          @for (preset of avatarPresets; track preset) {
+          <img [src]="preset" [class.selected]="editForm.avatar === preset" (click)="selectAvatarPreset(preset)"
+            alt="Preset avatar" />
+          }
+        </div>
+        }
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Full Name *</label>
+            <input type="text" class="form-input" [(ngModel)]="editForm.name" name="name" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Email Address *</label>
+            <input type="email" class="form-input" [(ngModel)]="editForm.email" name="email" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Phone Number</label>
+            <input type="tel" class="form-input" [(ngModel)]="editForm.phone" name="phone" placeholder="+1 (555) 000-0000" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Street Address</label>
+            <input type="text" class="form-input" [(ngModel)]="editForm.address" name="address" placeholder="123 Main St" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">City & State</label>
+            <input type="text" class="form-input" [(ngModel)]="editForm.city" name="city" placeholder="San Francisco, CA" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Country</label>
+            <input type="text" class="form-input" [(ngModel)]="editForm.country" name="country" placeholder="United States" />
+          </div>
+        </div>
+
+        <div class="form-group full-width">
+          <label class="form-label">About / Craft Preferences Bio</label>
+          <textarea class="form-textarea" rows="3" [(ngModel)]="editForm.bio" name="bio"
+            placeholder="Tell makers a bit about what handiworks or custom pieces you like..."></textarea>
+        </div>
+
+        <div class="form-group full-width">
+          <label class="form-label">Favorite Craft Categories (Click to toggle)</label>
+          <div class="category-toggle-chips">
+            @for (cat of allCategories(); track cat.id) {
+            <button type="button" class="chip-btn" [class.active]="isCategoryPreferred(cat.name)"
+              (click)="toggleCategoryPreference(cat.name)">
+              <mat-icon>{{ isCategoryPreferred(cat.name) ? 'check_box' : 'check_box_outline_blank' }}</mat-icon>
+              {{ cat.name }}
+            </button>
+            }
+          </div>
+        </div>
+
+        <div class="form-actions-bottom">
+          <button type="button" class="btn-cancel-edit" (click)="cancelEditing()">Cancel</button>
+          <button type="submit" class="btn-save-profile">
+            <mat-icon>check</mat-icon> Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+    }
+  </div>
+  }
+
+  <!-- TAB 2: My Bookings & Orders Content -->
+  @if (activeTab === 'bookings') {
+  <div class="tab-content bookings-tab-content">
+    <div class="bookings-control-bar">
+      <!-- Status Filter Tabs -->
+      <div class="filter-pills">
+        <button class="pill" [class.active]="bookingStatusFilter() === 'all'" (click)="setBookingFilter('all')">
+          All ({{ totalBookingsCount() }})
+        </button>
+        <button class="pill pill-pending" [class.active]="bookingStatusFilter() === 'pending'"
+          (click)="setBookingFilter('pending')">
+          Pending ({{ pendingCount() }})
+        </button>
+        <button class="pill pill-confirmed" [class.active]="bookingStatusFilter() === 'confirmed'"
+          (click)="setBookingFilter('confirmed')">
+          Confirmed ({{ confirmedCount() }})
+        </button>
+        <button class="pill pill-completed" [class.active]="bookingStatusFilter() === 'completed'"
+          (click)="setBookingFilter('completed')">
+          Completed ({{ completedCount() }})
+        </button>
+        <button class="pill pill-cancelled" [class.active]="bookingStatusFilter() === 'cancelled'"
+          (click)="setBookingFilter('cancelled')">
+          Cancelled
+        </button>
+      </div>
+
+      <!-- Search Input -->
+      <div class="booking-search-box">
+        <mat-icon>search</mat-icon>
+        <input type="text" [value]="bookingSearchQuery()" (input)="onSearchInput($event)" placeholder="Search by booking ID, title or maker..." />
+        @if (bookingSearchQuery()) {
+        <button class="clear-search" (click)="clearSearch()">
+          <mat-icon>close</mat-icon>
+        </button>
+        }
+      </div>
+    </div>
+
+    <!-- Bookings Cards List -->
+    <div class="bookings-list">
+      @for (booking of filteredBookings(); track booking.id) {
+      <div class="booking-card" [class.cancelled-card]="booking.status === 'cancelled'">
+        <!-- Card Top Bar -->
+        <div class="card-header">
+          <div class="id-date-group">
+            <span class="booking-id-tag">#{{ booking.id }}</span>
+            <span class="created-at">
+              <mat-icon>calendar_today</mat-icon> Booked on {{ booking.createdAt | date:'mediumDate' }}
+            </span>
+          </div>
+
+          <div class="status-badge" [ngClass]="getStatusBadgeClass(booking.status)">
+            <span class="status-dot"></span>
+            {{ getStatusLabel(booking.status) }}
+          </div>
+        </div>
+
+        <!-- Card Core Content -->
+        <div class="card-body">
+          <div class="work-info">
+            <h3 class="work-title">{{ booking.workTitle }}</h3>
+            <p class="creator-name">
+              <mat-icon>storefront</mat-icon> Maker: <strong>{{ booking.creatorName }}</strong>
+            </p>
+          </div>
+
+          <div class="booking-meta-grid">
+            <div class="meta-item">
+              <span class="meta-label">Scheduled Date</span>
+              <span class="meta-value highlight-date">
+                <mat-icon>event</mat-icon> {{ booking.bookingDate }}
+              </span>
+            </div>
+
+            <div class="meta-item">
+              <span class="meta-label">Estimated Total</span>
+              <span class="meta-value highlight-price">${{ booking.totalPrice }}</span>
+            </div>
+
+            <div class="meta-item">
+              <span class="meta-label">Contact Name</span>
+              <span class="meta-value">{{ booking.customerName }}</span>
+            </div>
+          </div>
+
+          @if (booking.customNotes) {
+          <div class="custom-notes-box">
+            <span class="notes-title"><mat-icon>description</mat-icon> Your Specifications & Notes:</span>
+            <p class="notes-text">"{{ booking.customNotes }}"</p>
+          </div>
+          }
+
+          <!-- Status Timeline Visualization -->
+          <div class="status-timeline">
+            <div class="timeline-step" [class.step-active]="true" [class.step-complete]="booking.status !== 'pending' && booking.status !== 'cancelled'">
+              <div class="step-circle"><mat-icon>check</mat-icon></div>
+              <span class="step-label">Requested</span>
+            </div>
+
+            <div class="timeline-line" [class.line-active]="booking.status === 'confirmed' || booking.status === 'completed'"></div>
+
+            <div class="timeline-step" [class.step-active]="booking.status === 'confirmed' || booking.status === 'completed'" [class.step-complete]="booking.status === 'completed'">
+              <div class="step-circle"><mat-icon>{{ booking.status === 'completed' ? 'check' : 'precision_manufacturing' }}</mat-icon></div>
+              <span class="step-label">Confirmed & In Production</span>
+            </div>
+
+            <div class="timeline-line" [class.line-active]="booking.status === 'completed'"></div>
+
+            <div class="timeline-step" [class.step-active]="booking.status === 'completed'" [class.step-complete]="booking.status === 'completed'">
+              <div class="step-circle"><mat-icon>card_giftcard</mat-icon></div>
+              <span class="step-label">Completed & Delivered</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card Footer Actions -->
+        <div class="card-footer">
+          <button class="btn-view-work" (click)="viewWork(booking.workId)">
+            <mat-icon>visibility</mat-icon> View Handiwork
+          </button>
+
+          @if (booking.status === 'pending' || booking.status === 'confirmed') {
+          <button class="btn-cancel-booking" (click)="cancelBooking(booking.id)">
+            <mat-icon>cancel</mat-icon> Cancel Booking
+          </button>
+          }
+
+          <a [href]="'mailto:' + booking.customerEmail + '?subject=Query regarding booking ' + booking.id" class="btn-contact-maker">
+            <mat-icon>mail_outline</mat-icon> Contact Maker
+          </a>
+        </div>
+      </div>
+      } @empty {
+      <div class="empty-bookings-state">
+        <mat-icon class="empty-icon">event_busy</mat-icon>
+        <h3>No Bookings Found</h3>
+        <p>
+          @if (bookingSearchQuery() || bookingStatusFilter() !== 'all') {
+          No bookings match your current filter or search criteria.
+          } @else {
+          You haven't placed any handiwork orders or bookings yet!
+          }
+        </p>
+        <a routerLink="/" class="btn-browse-works">Browse Handiworks & Order Now</a>
+      </div>
+      }
+    </div>
+  </div>
+  }
+
+  <!-- Bottom Account Actions Section -->
+  <div class="bottom-account-actions-card">
+    <div class="actions-meta">
+      <div class="actions-icon">
+        <mat-icon>manage_accounts</mat-icon>
+      </div>
+      <div class="actions-text">
+        <h3>Account & Session Management</h3>
+        <p>Make changes to your consumer profile settings or log out of your active Voziba session.</p>
+      </div>
+    </div>
+
+    <div class="actions-btn-group">
+      @if (!isEditing) {
+      <button class="btn-bottom-edit" (click)="startEditing()">
+        <mat-icon>edit</mat-icon> Edit Profile
+      </button>
+      <button class="btn-bottom-logout" (click)="onLogout()" title="Log out of Consumer Account">
+        <mat-icon>logout</mat-icon> Log Out
+      </button>
+      } @else {
+      <button class="btn-bottom-save" (click)="saveProfile()">
+        <mat-icon>check</mat-icon> Save Changes
+      </button>
+      <button class="btn-bottom-cancel" (click)="cancelEditing()">
+        <mat-icon>close</mat-icon> Cancel
+      </button>
+      }
+    </div>
+  </div>
+</div>
+
+<!-- Modal Popups for Viewing Work Details from Profile -->
+@if (selectedWorkForDetails) {
+<app-work-detail-modal [work]="selectedWorkForDetails" (close)="closeWorkDetailsModal()"
+  (bookNow)="reBookWork($event)"></app-work-detail-modal>
+}
+
+@if (selectedWorkToBookAgain) {
+<app-booking-modal [work]="selectedWorkToBookAgain" (close)="closeRebookModal()"></app-booking-modal>
+}
+
+<app-footer></app-footer>

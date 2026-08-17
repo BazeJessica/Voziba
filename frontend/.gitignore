@@ -1,0 +1,29 @@
+# Frontend .gitignore
+
+# Dependencies
+/node_modules
+
+# Compiled Output
+/dist
+/tmp
+/out-tsc
+/.angular
+
+# Environment Variables & Secrets
+.env
+.env.local
+.env*.local
+
+# Testing & Coverage
+/coverage
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDEs & System
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

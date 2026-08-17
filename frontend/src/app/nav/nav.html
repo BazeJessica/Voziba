@@ -1,0 +1,54 @@
+<div class="nav-container">
+  <a routerLink="/" class="logo-brand">
+    <div class="logo-icon">V</div>
+    <div class="brand-name">Voz<span>iba</span></div>
+  </a>
+
+  <nav class="nav">
+    <ul class="nav-links" [class.open]="menuOpen">
+      <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
+          (click)="closeMenu()">Home</a></li>
+      <li><a routerLink="/categories" routerLinkActive="active" (click)="closeMenu()">Categories</a></li>
+      <li><a routerLink="/browse" routerLinkActive="active" (click)="closeMenu()">Browse Handiworks</a></li>
+      <li><a routerLink="/about" routerLinkActive="active" (click)="closeMenu()">About Us</a></li>
+      <li><a routerLink="/contact" routerLinkActive="active" (click)="closeMenu()">Contact Us</a></li>
+      <li *ngIf="isLoggedIn() && userRole() === 'consumer'">
+        <a routerLink="/profile" routerLinkActive="active" (click)="closeMenu()">My Profile</a>
+      </li>
+      <li *ngIf="isLoggedIn() && userRole() === 'business_owner'">
+        <a routerLink="/business-dashboard" routerLinkActive="active" (click)="closeMenu()">Business Dashboard</a>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="nav-right">
+    <!-- Logged Out State: Show Log In & Sign Up Tabs -->
+    <ng-container *ngIf="!isLoggedIn()">
+      <a routerLink="/login" class="nav-auth-btn login-btn" routerLinkActive="auth-active"
+        title="Log In to your Account">
+        Log In
+      </a>
+      <a routerLink="/signup" class="nav-auth-btn signup-btn" routerLinkActive="auth-active" title="Create New Account">
+        Sign Up
+      </a>
+    </ng-container>
+
+    <!-- Logged In State: Show User's Picture & Name Tab -->
+    <ng-container *ngIf="isLoggedIn()">
+      <a [routerLink]="userRole() === 'business_owner' ? '/business-dashboard' : '/profile'" class="user-profile-btn"
+        routerLinkActive="profile-active"
+        [title]="userRole() === 'business_owner' ? 'Go to Business Dashboard' : 'Go to My Profile'">
+        <img [src]="user().avatar" [alt]="user().name" class="nav-avatar" />
+        <span class="user-name-abbr">{{ user().name }}</span>
+      </a>
+
+      <button class="logout-icon-btn" (click)="logout()" title="Log Out of your Session">
+        <mat-icon>logout</mat-icon>
+      </button>
+    </ng-container>
+
+    <a *ngIf="!isLoggedIn()" routerLink="/admin" class="admin-portal-btn" routerLinkActive="admin-active"
+      title="Platform Admin Control Center">
+      <mat-icon>admin_panel_settings</mat-icon> Admin
+    </a>
+  </div>
