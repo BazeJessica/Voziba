@@ -10,8 +10,8 @@
       </p>
 
       <div class="hero-actions">
-        <button class="btn-primary-teal" (click)="scrollToSection('works')">
-          Browse Handiworks
+        <button class="btn-primary-teal" (click)="goToBrowse()">
+          <mat-icon>explore</mat-icon> Explore All Handiworks
         </button>
 
         <button class="btn-accent-gold" (click)="openAddWork()">
@@ -55,17 +55,22 @@
           Select a craft category to filter handiworks and discover custom local talent
         </p>
       </div>
-      <app-category></app-category>
+      <app-category [limit]="6"></app-category>
     </div>
   </section>
 
   <!-- Featured Works Section -->
   <section id="works" class="business-section">
     <div class="section-container">
-      <div class="section-header">
-        <span class="section-tag">MARKETPLACE</span>
-        <h2 class="business-title">Available Handiworks & Custom Orders</h2>
-        <p class="business-subtitle">Explore bespoke creations ready for immediate booking or custom orders</p>
+      <div class="section-header marketplace-header-flex">
+        <div>
+          <span class="section-tag">MARKETPLACE</span>
+          <h2 class="business-title">Available Handiworks & Custom Orders</h2>
+          <p class="business-subtitle">Explore bespoke creations ready for immediate booking or custom orders</p>
+        </div>
+        <button class="btn-explore-catalog" (click)="goToBrowse()">
+          <mat-icon>grid_view</mat-icon> Explore All Handiworks
+        </button>
       </div>
 
       <app-businesses (selectWorkToBook)="openBooking($event)"

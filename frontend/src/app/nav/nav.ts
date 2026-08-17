@@ -16,6 +16,7 @@ export class Nav {
 
   user = this.userService.profile;
   isLoggedIn = this.userService.isLoggedIn;
+  userRole = this.userService.userRole;
 
   toggleMenu() {
     this.menuOpen = !this.menuOpen;
@@ -28,5 +29,11 @@ export class Nav {
   onListWorkClick() {
     this.closeMenu();
     this.openListWorkModal.emit();
+  }
+
+  logout() {
+    this.userService.logout();
+    this.closeMenu();
+    this.router.navigate(['/login']);
   }
 }

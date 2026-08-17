@@ -20,7 +20,7 @@
         <span class="biz-category"><mat-icon>category</mat-icon> {{ activeBusinessDetails().category }}</span>
         <div class="biz-sub-meta">
           <span>📍 {{ activeBusinessDetails().location }}</span>
-          <span class="rating-txt">★ {{ activeBusinessDetails().rating }}</span>
+          <span class="rating-txt">★ {{ activeBusinessDetails().rating }} ({{ activeBusinessDetails().reviewsCount }} reviews)</span>
         </div>
       </div>
     </div>
@@ -141,6 +141,10 @@
         <div class="kpi-mini-pill teal-pill">
           <mat-icon>hourglass_top</mat-icon>
           <span>{{ activeCount() }} Active Orders</span>
+        </div>
+        <div class="kpi-mini-pill gold-pill" title="Overall Customer Rating & Reviews">
+          <mat-icon>star</mat-icon>
+          <span>★ {{ activeBusinessDetails().rating }} ({{ activeBusinessDetails().reviewsCount }} Reviews)</span>
         </div>
       </div>
     </header>
@@ -471,14 +475,7 @@
         <div class="form-group">
           <label>Primary Craft Category</label>
           <select [(ngModel)]="editProfileForm().category" class="form-input">
-            <option value="Woodworking & Furniture">Woodworking & Furniture</option>
-            <option value="Bespoke Tailoring">Bespoke Tailoring</option>
-            <option value="Pottery & Ceramics">Pottery & Ceramics</option>
-            <option value="Leathercraft">Leathercraft</option>
-            <option value="Jewelry & Accessories">Jewelry & Accessories</option>
-            <option value="Artwork & Murals">Artwork & Murals</option>
-            <option value="Metalwork & Sculptures">Metalwork & Sculptures</option>
-            <option value="Home Decor & Lighting">Home Decor & Lighting</option>
+            <option *ngFor="let cat of worksService.categories()" [value]="cat.name">{{ cat.name }}</option>
           </select>
         </div>
 

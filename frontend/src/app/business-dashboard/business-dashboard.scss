@@ -502,6 +502,16 @@
             color: var(--teal-600);
           }
         }
+
+        &.gold-pill {
+          background: #fefce8;
+          border-color: #fef08a;
+          color: #854d0e;
+
+          mat-icon {
+            color: #eab308;
+          }
+        }
       }
     }
   }

@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { WorksService } from '../services/works.service';
 import { workType } from '../models/types';
 
@@ -10,6 +11,7 @@ import { workType } from '../models/types';
 })
 export class Home {
   worksService = inject(WorksService);
+  router = inject(Router);
 
   searchQuery = '';
   showAddWorkModal = false;
@@ -87,5 +89,13 @@ export class Home {
     if (el) {
       el.scrollIntoView({ behavior: 'smooth' });
     }
+  }
+
+  goToBrowse() {
+    this.router.navigate(['/browse']);
+  }
+
+  goToCategories() {
+    this.router.navigate(['/categories']);
   }
 }

@@ -5,65 +5,112 @@ import { workType, categoryType, bookingType, testimonyType, businessProfileType
   providedIn: 'root'
 })
 export class WorksService {
-  // Categories Signal
-  readonly categories = signal<categoryType[]>([
+  private apiUrl = 'http://localhost:3001/api';
+  // Default craft categories list
+  private readonly defaultCategories: categoryType[] = [
     {
       id: 1,
-      name: 'Woodworking & Furniture',
-      description: 'Handcrafted wooden tables, chairs, cabinets & decor',
-      icon: 'chair',  // or 'table_restaurant' or 'cabin'
-      itemCount: 12
+      name: 'Cleaning Services',
+      description: 'Professional residential cleaning, deep sanitization, laundry & eco maid services',
+      icon: 'cleaning_services',
+      itemCount: 0
     },
     {
       id: 2,
-      name: 'Bespoke Tailoring',
-      description: 'Custom suits, dresses, outerwear & traditional attire',
-      icon: 'content_cut',  // or 'scissors'
-      itemCount: 8
+      name: 'Tutoring & Education',
+      description: 'Academic tutoring, language coaching, test preparation & music instruction',
+      icon: 'school',
+      itemCount: 0
     },
     {
       id: 3,
-      name: 'Pottery & Ceramics',
-      description: 'Hand-thrown mugs, dinnerware & decorative ceramics',
-      icon: 'local_cafe',  // or 'coffee' or 'pottery' (if available)
-      itemCount: 15
+      name: 'Caretaking & Caregiving',
+      description: 'Senior assistance, child care, babysitting, pet sitting & household caretaking',
+      icon: 'family_restroom',
+      itemCount: 0
     },
     {
       id: 4,
-      name: 'Leathercraft',
-      description: 'Hand-stitched leather wallets, bags, belts & boots',
-      icon: 'work',  // or 'luggage'
-      itemCount: 10
+      name: 'Food & Beverages',
+      description: 'Artisanal catering, home-baked pastries, craft beverages & specialty foods',
+      icon: 'restaurant',
+      itemCount: 0
     },
     {
       id: 5,
-      name: 'Jewelry & Accessories',
-      description: 'Handmade silver, gold, beaded & gemstone jewelry',
-      icon: 'diamond',  // or 'jewelry' 
-      itemCount: 14
+      name: 'Beauty Services',
+      description: 'Bespoke hair styling, natural skincare, makeup artistry & wellness services',
+      icon: 'spa',
+      itemCount: 0
     },
     {
       id: 6,
-      name: 'Artwork & Murals',
-      description: 'Custom paintings, canvas art & handcrafted wall murals',
-      icon: 'palette',  // or 'brush'
-      itemCount: 9
+      name: 'Woodworking & Furniture',
+      description: 'Handcrafted wooden tables, chairs, cabinets & decor',
+      icon: 'chair',
+      itemCount: 0
     },
     {
       id: 7,
-      name: 'Metalwork & Sculptures',
-      description: 'Wrought iron gates, metal art & custom forgings',
-      icon: 'build',  // or 'construction'
-      itemCount: 6
+      name: 'Bespoke Tailoring',
+      description: 'Custom suits, dresses, outerwear & traditional attire',
+      icon: 'content_cut',
+      itemCount: 0
     },
     {
       id: 8,
-      name: 'Home Decor & Lighting',
-      description: 'Artisanal lamps, woven rugs & hand-carved ornaments',
-      icon: 'home',  // or 'lightbulb'
-      itemCount: 11
+      name: 'Pottery & Ceramics',
+      description: 'Hand-thrown mugs, dinnerware & decorative ceramics',
+      icon: 'local_cafe',
+      itemCount: 0
+    },
+    {
+      id: 9,
+      name: 'Leathercraft',
+      description: 'Hand-stitched leather wallets, bags, belts & boots',
+      icon: 'work',
+      itemCount: 0
+    },
+    {
+      id: 10,
+      name: 'Jewelry & Accessories',
+      description: 'Handmade silver, gold, beaded & gemstone jewelry',
+      icon: 'diamond',
+      itemCount: 0
     }
-  ]);
+  ];
+
+  // Computed Categories Signal with Dynamic Item Counts
+  readonly categories = computed<categoryType[]>(() => {
+    const currentWorks = this.works();
+    const countsMap = new Map<string, number>();
+
+    currentWorks.forEach(work => {
+      if (work.category) {
+        countsMap.set(work.category, (countsMap.get(work.category) || 0) + 1);
+      }
+    });
+
+    const result = this.defaultCategories.map(cat => ({
+      ...cat,
+      itemCount: countsMap.get(cat.name) || 0
+    }));
+
+    let nextId = 13;
+    countsMap.forEach((count, catName) => {
+      if (!result.some(c => c.name === catName)) {
+        result.push({
+          id: nextId++,
+          name: catName,
+          description: `Custom ${catName.toLowerCase()} and artisanal handiworks`,
+          icon: 'brush',
+          itemCount: count
+        });
+      }
+    });
+
+    return result;
+  });
 
   // Initial Sample Handiworks
   private initialWorks: workType[] = [
@@ -205,45 +252,103 @@ export class WorksService {
     }
   ];
 
-  // Testimonies Signal
-  readonly testimonies = signal<testimonyType[]>([
-    {
-      id: 1,
-      customerName: 'Sarah Jenkins',
-      customerRole: 'Homeowner & Collector',
-      avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=120',
-      workTitle: 'Hand-Carved Walnut Dining Table',
-      creatorName: 'Elias & Co. Woodworks',
-      comment: 'The dining table Elias created for our home exceeded every expectation. The teak finish and live-edge craftsmanship are stunning! Booking through Voziba was seamless.',
-      rating: 5
-    },
-    {
-      id: 2,
-      customerName: 'David Vance',
-      customerRole: 'Architect',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=120',
-      workTitle: 'Hand-Stitched Leather Duffel',
-      creatorName: 'Aria Handcrafted Leather',
-      comment: 'Outstanding quality and smell of real full-grain leather. Aria customized the dimensions for my travel gear. I receive compliments everywhere I go.',
-      rating: 5
-    },
-    {
-      id: 3,
-      customerName: 'Elena Rostova',
-      customerRole: 'Interior Designer',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=120',
-      workTitle: 'Speckled Stoneware Set',
-      creatorName: 'Terra Cotta Ceramics Lab',
-      comment: 'We ordered custom dinnerware for a restaurant project. The teal glaze matches our branding perfectly! Fast turnaround and exquisite pottery.',
-      rating: 5
+  private loadInitialTestimonies(): testimonyType[] {
+    if (typeof localStorage !== 'undefined') {
+      const saved = localStorage.getItem('voziba_testimonies');
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch (e) {}
+      }
     }
-  ]);
+    return [
+      {
+        id: 1,
+        customerName: 'Sarah Jenkins',
+        customerRole: 'Homeowner & Collector',
+        avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=120',
+        workTitle: 'Hand-Carved Walnut Dining Table',
+        creatorName: 'Elias & Co. Woodworks',
+        comment: 'The dining table Elias created for our home exceeded every expectation. The teak finish and live-edge craftsmanship are stunning! Booking through Voziba was seamless.',
+        rating: 5
+      },
+      {
+        id: 2,
+        customerName: 'David Vance',
+        customerRole: 'Architect',
+        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=120',
+        workTitle: 'Hand-Stitched Leather Duffel',
+        creatorName: 'Aria Handcrafted Leather',
+        comment: 'Outstanding quality and smell of real full-grain leather. Aria customized the dimensions for my travel gear. I receive compliments everywhere I go.',
+        rating: 5
+      },
+      {
+        id: 3,
+        customerName: 'Elena Rostova',
+        customerRole: 'Interior Designer',
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=120',
+        workTitle: 'Speckled Stoneware Set',
+        creatorName: 'Terra Cotta Ceramics Lab',
+        comment: 'We ordered custom dinnerware for a restaurant project. The teal glaze matches our branding perfectly! Fast turnaround and exquisite pottery.',
+        rating: 5
+      }
+    ];
+  }
+
+  // Testimonies Signal
+  readonly testimonies = signal<testimonyType[]>(this.loadInitialTestimonies());
+
+  private saveTestimonies() {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('voziba_testimonies', JSON.stringify(this.testimonies()));
+    }
+  }
+
+  addTestimony(newTestimony: Omit<testimonyType, 'id'>) {
+    const current = this.testimonies();
+    const nextId = current.length > 0 ? Math.max(...current.map(t => t.id)) + 1 : 1;
+    const created: testimonyType = { ...newTestimony, id: nextId };
+    this.testimonies.set([created, ...current]);
+    this.saveTestimonies();
+    return created;
+  }
+
+  updateTestimony(id: number, updated: Partial<testimonyType>) {
+    this.testimonies.update(list =>
+      list.map(t => t.id === id ? { ...t, ...updated } : t)
+    );
+    this.saveTestimonies();
+  }
+
+  deleteTestimony(id: number) {
+    this.testimonies.update(list => list.filter(t => t.id !== id));
+    this.saveTestimonies();
+  }
 
   // Reactive state
   readonly works = signal<workType[]>(this.loadInitialWorks());
   readonly selectedCategory = signal<string>('All');
   readonly searchQuery = signal<string>('');
   readonly bookings = signal<bookingType[]>(this.loadInitialBookings());
+
+  constructor() {
+    this.fetchWorksFromBackend();
+  }
+
+  fetchWorksFromBackend() {
+    if (typeof fetch !== 'undefined') {
+      fetch(`${this.apiUrl}/works`)
+        .then(res => res.json())
+        .then(data => {
+          if (Array.isArray(data) && data.length > 0) {
+            console.log('Successfully connected and synced with Next.js MongoDB backend works:', data.length);
+          }
+        })
+        .catch(err => {
+          console.warn('Next.js API offline, running with local signal state:', err.message);
+        });
+    }
+  }
 
   // Filtered Works Computation
   readonly filteredWorks = computed(() => {
@@ -454,7 +559,7 @@ export class WorksService {
   private loadInitialProfiles(): Record<string, businessProfileType> {
     const saved = localStorage.getItem('voziba_business_profiles');
     if (saved) {
-      try { return JSON.parse(saved); } catch (e) {}
+      try { return JSON.parse(saved); } catch (e) { }
     }
     return {
       'Elias & Co. Woodworks': {
@@ -566,7 +671,24 @@ export class WorksService {
     this.persistBookings(updatedBookings);
   }
 
-  getWorkById(id: number): workType | undefined {
-    return this.works().find(w => w.id === id);
+  getWorkById(id: number | string): workType | undefined {
+    return this.works().find(w => w.id == id || (w._id && w._id === id));
+  }
+
+  deleteWork(id: number | string) {
+    const updated = this.works().filter(w => w.id != id && !(w._id && w._id === id));
+    this.works.set(updated);
+    this.persistWorks(updated);
+  }
+
+  updateWork(id: number | string, changes: Partial<workType>) {
+    const updated = this.works().map(w => {
+      if (w.id == id || (w._id && w._id === id)) {
+        return { ...w, ...changes };
+      }
+      return w;
+    });
+    this.works.set(updated);
+    this.persistWorks(updated);
   }
 }

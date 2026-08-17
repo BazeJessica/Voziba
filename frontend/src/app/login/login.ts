@@ -54,21 +54,17 @@ export class LoginComponent {
     setTimeout(() => {
       const res = this.userService.loginWithRole({
         email: this.email.trim(),
-        role: this.role,
-        name: this.role === 'consumer' ? 'Jessica Miller' : 'Elias & Co. Woodworks'
+        role: this.role
       });
 
-      if (this.role === 'business_owner') {
-        this.successMessage = 'Logged in as Business Owner! Redirecting to Business Dashboard...';
-        setTimeout(() => {
-          this.router.navigate(['/business-dashboard']);
-        }, 1000);
-      } else {
-        this.successMessage = 'Logged in as Consumer! Redirecting to your Profile...';
-        setTimeout(() => {
-          this.router.navigate(['/profile']);
-        }, 1000);
-      }
-    }, 500);
+      const roleTitle = res.detectedRole === 'business_owner' ? 'Business Owner' : 'Consumer';
+      const destination = res.detectedRole === 'business_owner' ? 'Business Dashboard' : 'Consumer Profile';
+
+      this.successMessage = `Logged in as ${roleTitle}! Redirecting to ${destination}...`;
+
+      setTimeout(() => {
+        this.router.navigate([res.targetRoute]);
+      }, 900);
+    }, 400);
   }
 }

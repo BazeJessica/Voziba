@@ -12,7 +12,7 @@
         </div>
 
         <div class="info-col">
-          <a [routerLink]="['/business-dashboard', work.creatorName]" (click)="onClose()" class="creator-badge-link" title="Visit {{ work.creatorName }} Business Portal">
+          <div class="creator-badge-link">
             <div class="creator-badge">
               <img [src]="work.creatorAvatar" [alt]="work.creatorName" class="creator-avatar" />
               <div class="creator-meta">
@@ -21,7 +21,7 @@
               </div>
               <div class="rating-pill">★ {{ work.rating }} ({{ work.reviewsCount }} reviews)</div>
             </div>
-          </a>
+          </div>
 
           <h2 class="detail-title">{{ work.title }}</h2>
 

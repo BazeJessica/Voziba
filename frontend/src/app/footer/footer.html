@@ -1,58 +1,101 @@
 <footer class="footer">
   <div class="footer-inner">
     <div class="links-container">
+
       <section class="brand-section">
         <div class="footer-logo">
           <div class="logo-icon">V</div>
           <span class="brand-name">Voziba</span>
         </div>
-        <p class="brand-tagline">The trusted marketplace for artisanal handiworks, bespoke crafts, and local master
-          services.</p>
+        <p class="brand-tagline">
+          The trusted marketplace for artisanal handiworks, bespoke crafts, and local master services.
+        </p>
         <div class="social-links">
-          <mat-icon class="social-icon">language</mat-icon>
-          <mat-icon class="social-icon">photo_camera</mat-icon>
-          <mat-icon class="social-icon">work</mat-icon>
-          <mat-icon class="social-icon">location_on</mat-icon>
+          <a [routerLink]="['/browse']" title="Explore Market" class="social-link">
+            <mat-icon class="social-icon">language</mat-icon>
+          </a>
+          <a [routerLink]="['/categories']" title="Craft Directory" class="social-link">
+            <mat-icon class="social-icon">category</mat-icon>
+          </a>
+          <a [routerLink]="['/about']" title="About Voziba" class="social-link">
+            <mat-icon class="social-icon">info</mat-icon>
+          </a>
+          <a [routerLink]="['/contact']" title="Contact Us" class="social-link">
+            <mat-icon class="social-icon">location_on</mat-icon>
+          </a>
         </div>
       </section>
 
       <section>
         <h2>Popular Categories</h2>
         <ul>
-          <li><a routerLink="/#categories">Woodworking & Furniture</a></li>
-          <li><a routerLink="/#categories">Bespoke Tailoring</a></li>
-          <li><a routerLink="/#categories">Pottery & Ceramics</a></li>
-          <li><a routerLink="/#categories">Custom Leathercraft</a></li>
-          <li><a routerLink="/#categories">Jewelry & Accessories</a></li>
+          <li>
+            <a>Woodworking &amp; Furniture</a>
+          </li>
+          <li>
+            <a>Bespoke Tailoring</a>
+          </li>
+          <li>
+            <a>Pottery &amp; Ceramics</a>
+          </li>
+          <li>
+            <a>Custom Leathercraft</a>
+          </li>
+          <li>
+            <a>Jewelry &amp; Accessories</a>
+          </li>
         </ul>
       </section>
 
       <section>
-        <h2>For Artisans & Creators</h2>
+        <h2>For Artisans &amp; Creators</h2>
         <ul>
-          <li><a routerLink="/#works">List Your Handiwork</a></li>
-          <li><a routerLink="/">Creator Guidelines</a></li>
-          <li><a routerLink="/">Booking Management</a></li>
-          <li><a routerLink="/">Artisan Stories</a></li>
-          <li><a routerLink="/">Partner Support</a></li>
+          <li>
+            <a [routerLink]="['/signup']">Join as a Maker</a>
+          </li>
+          <li>
+            <a [routerLink]="['/business-dashboard']">Business Dashboard</a>
+          </li>
+          <li>
+            <a [routerLink]="['/contact']" [queryParams]="{ topic: 'Artisan Onboarding & Studio Verification' }">Studio
+              Verification</a>
+          </li>
+          <li>
+            <a [routerLink]="['/about']">Artisan Stories &amp; Mission</a>
+          </li>
+          <li>
+            <a [routerLink]="['/contact']" [queryParams]="{ topic: 'Partnerships & Media' }">Partner Inquiries</a>
+          </li>
         </ul>
       </section>
 
       <section>
         <h2>Customer Care</h2>
         <ul>
-          <li><a routerLink="/">How Booking Works</a></li>
-          <li><a routerLink="/">Buyer Protection & Guarantee</a></li>
-          <li><a routerLink="/">Custom Orders FAQ</a></li>
-          <li><a routerLink="/">Contact Support</a></li>
-          <li><a routerLink="/">Terms & Privacy</a></li>
+          <li>
+            <a [routerLink]="['/browse']">Browse Handiworks</a>
+          </li>
+          <li>
+            <a [routerLink]="['/about']">How Booking Works</a>
+          </li>
+          <li>
+            <a [routerLink]="['/about']">Buyer Protection &amp; Guarantee</a>
+          </li>
+          <li>
+            <a [routerLink]="['/about']">Custom Orders FAQ</a>
+          </li>
+          <li>
+            <a [routerLink]="['/contact']">Contact Support</a>
+          </li>
         </ul>
       </section>
+
     </div>
 
     <div class="copyright">
       <hr />
-      <p>© {{ currentYear }} Voziba Inc. All rights reserved. Connecting consumers with authentic craftsmanship.</p>
+      <p>Mammie_Awubei© {{ currentYear }} Voziba Inc. All rights reserved. Connecting consumers with authentic
+        craftsmanship.</p>
     </div>
   </div>
 </footer>

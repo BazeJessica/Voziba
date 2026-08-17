@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { WorksService } from '../services/works.service';
 
 @Component({
@@ -10,8 +10,11 @@ import { WorksService } from '../services/works.service';
 export class CategoryComponent {
   worksService = inject(WorksService);
 
+  @Input() limit: number = 6;
+
   get categories() {
-    return this.worksService.categories();
+    const list = this.worksService.categories();
+    return this.limit ? list.slice(0, this.limit) : list;
   }
 
   get selectedCategory() {

@@ -1,0 +1,77 @@
+<div class="categories-page">
+
+  <section class="categories-hero">
+    <div class="categories-hero-content">
+      <span class="section-eyebrow">Service & Craft Directory</span>
+      <h1>Explore All Categories</h1>
+      <p>
+        Discover professional service providers and master artisans across Cleaning Services, Tutoring & Education, Caretaking & Caregiving, Food & Beverages, Beauty Services, Woodworking, Tailoring, and Ceramics.
+      </p>
+    </div>
+  </section>
+
+  <section class="categories-toolbar-section">
+    <div class="categories-container">
+      <div class="toolbar-wrapper">
+        <div class="search-box">
+          <mat-icon>search</mat-icon>
+          <input type="text" [value]="searchQuery()" (input)="onSearch($event)"
+            placeholder="Search categories (e.g. tutoring, caretaking, cleaning services, food, beauty)..." />
+          @if (searchQuery()) {
+          <button class="clear-search" (click)="searchQuery.set('')">&times;</button>
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="categories-catalog-section">
+    <div class="categories-container">
+
+      <div class="catalog-header">
+        <h2>Explore Categories</h2>
+        <p>Showing {{ filteredCategories().length }} active categories</p>
+      </div>
+
+      <div class="categories-grid">
+        @for (cat of filteredCategories(); track cat.id) {
+        <div class="category-card" (click)="selectCategoryAndBrowse(cat.name)">
+
+          <div class="card-header">
+            <div class="icon-circle">
+              <mat-icon>{{ cat.icon }}</mat-icon>
+            </div>
+            <div class="listings-badge">
+              <strong>{{ cat.itemCount }}</strong> {{ cat.itemCount === 1 ? 'Listing' : 'Listings' }}
+            </div>
+          </div>
+
+          <div class="card-body">
+            <h3 class="cat-title">{{ cat.name }}</h3>
+            <p class="cat-desc">{{ cat.description }}</p>
+          </div>
+
+          <div class="card-footer">
+            <button class="btn-explore-cat">
+              <span>Explore {{ cat.name }}</span>
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+
+        </div>
+        } @empty {
+        <div class="empty-categories">
+          <mat-icon>search_off</mat-icon>
+          <h3>No Categories Match Your Search</h3>
+          <p>Try searching for a different service or craft name, or reset your search term.</p>
+          <button class="btn-reset" (click)="searchQuery.set('')">View All Categories</button>
+        </div>
+        }
+      </div>
+
+    </div>
+  </section>
+
+</div>
+
+<app-footer></app-footer>

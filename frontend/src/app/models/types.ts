@@ -1,5 +1,6 @@
 export interface categoryType {
   id: number;
+  _id?: string;
   name: string;
   description: string;
   icon: string;
@@ -8,6 +9,8 @@ export interface categoryType {
 
 export interface workType {
   id: number;
+  _id?: string;
+  creatorId?: string;
   title: string;
   creatorName: string;
   creatorAvatar: string;
@@ -27,6 +30,7 @@ export interface workType {
 
 export interface userProfileType {
   id: string;
+  _id?: string;
   name: string;
   email: string;
   phone: string;
@@ -42,7 +46,10 @@ export interface userProfileType {
 
 export interface bookingType {
   id: string;
-  workId: number;
+  _id?: string;
+  workId: number | string;
+  userId?: string;
+  creatorId?: string;
   workTitle: string;
   creatorName: string;
   customerName: string;
@@ -51,12 +58,13 @@ export interface bookingType {
   bookingDate: string;
   customNotes?: string;
   totalPrice: number;
-  status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
+  status: 'pending' | 'confirmed' | 'completed' | 'cancelled' | 'Pending' | 'In Progress' | 'Completed' | 'Cancelled';
   createdAt: string;
 }
 
 export interface testimonyType {
   id: number;
+  _id?: string;
   customerName: string;
   customerRole: string;
   avatar: string;
@@ -67,6 +75,8 @@ export interface testimonyType {
 }
 
 export interface businessProfileType {
+  _id?: string;
+  ownerId?: string;
   name: string;
   avatar: string;
   category: string;

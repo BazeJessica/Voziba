@@ -1,6 +1,5 @@
 <div class="browse-page">
 
-  <!-- Hero Header -->
   <section class="browse-hero">
     <div class="browse-hero-content">
       <span class="section-eyebrow">Public Marketplace</span>
@@ -12,11 +11,9 @@
     </div>
   </section>
 
-  <!-- Filter & Toolbar Section -->
   <section class="browse-toolbar-section">
     <div class="browse-container">
 
-      <!-- Top Search & Sort Row -->
       <div class="toolbar-controls">
         <div class="search-box">
           <mat-icon>search</mat-icon>
@@ -39,7 +36,6 @@
         </div>
       </div>
 
-      <!-- Categories Filter Chips -->
       <div class="category-chips-wrapper">
         <span class="filter-lbl"><mat-icon>filter_alt</mat-icon> Categories:</span>
         <div class="chips-scroll">
@@ -55,11 +51,9 @@
     </div>
   </section>
 
-  <!-- Handiworks Catalog Grid -->
   <section class="browse-catalog-section">
     <div class="browse-container">
 
-      <!-- Active Filter Banner -->
       <div class="catalog-status-bar">
         <div class="status-left">
           <span class="active-cat-badge">
@@ -75,7 +69,6 @@
         }
       </div>
 
-      <!-- Grid or Empty State -->
       @if (sortedWorks().length === 0) {
       <div class="empty-browse-card">
         <mat-icon class="empty-icon">manage_search</mat-icon>
@@ -142,7 +135,6 @@
 
 </div>
 
-<!-- Modals -->
 @if (selectedWorkToBook) {
 <app-booking-modal [work]="selectedWorkToBook" (close)="closeBooking()"></app-booking-modal>
 }
