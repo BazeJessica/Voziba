@@ -1,3 +1,41 @@
+@if (!isAdminAuthorized()) {
+<!-- Passcode Gateway Lock Screen -->
+<div class="admin-lock-wrapper">
+  <div class="admin-lock-card">
+    <div class="lock-header-icon">
+      <mat-icon>admin_panel_settings</mat-icon>
+    </div>
+    <h2>Admin Control Center Access</h2>
+    <p>This portal is restricted to authorized platform administrators. Enter your security passcode PIN
+      (<strong>*****</strong>) to gain access.</p>
+
+    <div class="passcode-form">
+      <label for="admin-pin-input">Admin Passcode PIN</label>
+      <div class="input-with-icon">
+        <mat-icon>lock</mat-icon>
+        <input id="admin-pin-input" type="password" maxlength="10" [value]="passcodeInput()"
+          (input)="passcodeInput.set($any($event.target).value)" (keyup.enter)="unlockAdminPortal()"
+          placeholder="Enter security PIN..." />
+      </div>
+
+      @if (passcodeError()) {
+      <div class="passcode-error-msg">
+        <mat-icon>error_outline</mat-icon> {{ passcodeError() }}
+      </div>
+      }
+
+      <button class="btn-unlock-portal" (click)="unlockAdminPortal()">
+        <mat-icon>vpn_key</mat-icon> Unlock Control Center
+      </button>
+    </div>
+
+    <div class="lock-card-footer">
+      <a routerLink="/" class="back-home-btn">← Return to Public Marketplace</a>
+    </div>
+  </div>
+</div>
+} @else {
+<!-- Main Admin Portal -->
 <div class="admin-portal-wrapper">
 
   <!-- Top Admin Hero Header -->
@@ -7,11 +45,17 @@
         <div class="admin-title-left">
           <div class="admin-badge"><mat-icon>admin_panel_settings</mat-icon> Platform Admin Control Center</div>
           <h1>Voziba User, Business & Privileges Management</h1>
-          <p>Oversee registered consumers, grant or revoke granular user permissions, manage artisan business profiles, and delete policy-violating items.</p>
+          <p>Oversee registered consumers, grant or revoke granular user permissions, manage artisan business profiles,
+            and delete policy-violating items.</p>
         </div>
-        <button class="btn-admin-logout" (click)="onLogout()" title="Log out of Admin Control Center">
-          <mat-icon>logout</mat-icon> Log Out Admin
-        </button>
+        <div class="header-action-btns">
+          <button class="btn-admin-logout lock-btn" (click)="lockAdminPortal()" title="Lock Admin Control Center">
+            <mat-icon>lock</mat-icon> Lock Portal
+          </button>
+          <button class="btn-admin-logout" (click)="onLogout()" title="Log out of Admin Control Center">
+            <mat-icon>logout</mat-icon> Log Out
+          </button>
+        </div>
       </div>
 
       <!-- KPI Metrics Row -->
@@ -84,11 +128,20 @@
         <button class="tab-btn" [class.active]="activeTab() === 'bookings'" (click)="setTab('bookings')">
           <mat-icon>receipt_long</mat-icon> Global Bookings
         </button>
+
+        <button class="tab-btn" [class.active]="activeTab() === 'team'" (click)="setTab('team')">
+          <mat-icon>badge</mat-icon> Team Members ({{ totalTeamCount() }})
+        </button>
+
+        <button class="tab-btn" [class.active]="activeTab() === 'testimonies'" (click)="setTab('testimonies')">
+          <mat-icon>rate_review</mat-icon> Manage Testimonies ({{ totalTestimoniesCount() }})
+        </button>
       </div>
 
       <div class="admin-search-box">
         <mat-icon>search</mat-icon>
-        <input type="text" [value]="searchQuery()" (input)="onSearch($event)" placeholder="Search users, roles, or privileges..." />
+        <input type="text" [value]="searchQuery()" (input)="onSearch($event)"
+          placeholder="Search users, roles, or privileges..." />
       </div>
     </div>
 
@@ -132,30 +185,37 @@
               </td>
 
               <td>
-                <span class="role-pill" [class.role-admin]="user.role === 'Super Admin'" [class.role-mod]="user.role === 'Moderator'">
+                <span class="role-pill" [class.role-admin]="user.role === 'Super Admin'"
+                  [class.role-mod]="user.role === 'Moderator'">
                   {{ user.role }}
                 </span>
               </td>
 
               <td>
                 <div class="privilege-tags">
-                  <span class="priv-badge" [class.enabled]="user.privileges.canView" title="Can View">👁️ View</span>
-                  <span class="priv-badge" [class.enabled]="user.privileges.canEdit" title="Can Edit Profile & Orders">✏️ Edit</span>
-                  <span class="priv-badge" [class.enabled]="user.privileges.canDelete" title="Can Delete Items">❌ Delete</span>
-                  <span class="priv-badge" [class.enabled]="user.privileges.canApproveOrders" title="Can Approve Orders">✅ Approve</span>
-                  <span class="priv-badge" [class.enabled]="user.privileges.canManageRoles" title="Can Manage Roles">🛡️ Roles</span>
+                  <span class="priv-badge" [class.enabled]="user.privileges.canView" title="Can View"> View</span>
+                  <span class="priv-badge" [class.enabled]="user.privileges.canEdit" title="Can Edit Profile & Orders">
+                    Edit</span>
+                  <span class="priv-badge" [class.enabled]="user.privileges.canDelete" title="Can Delete Items">
+                    Delete</span>
+                  <span class="priv-badge" [class.enabled]="user.privileges.canApproveOrders"
+                    title="Can Approve Orders"> Approve</span>
+                  <span class="priv-badge" [class.enabled]="user.privileges.canManageRoles" title="Can Manage Roles">
+                    Roles</span>
                 </div>
               </td>
 
               <td>
-                <span class="status-badge" [class.status-active]="user.status === 'Active'" [class.status-suspended]="user.status === 'Suspended'">
+                <span class="status-badge" [class.status-active]="user.status === 'Active'"
+                  [class.status-suspended]="user.status === 'Suspended'">
                   {{ user.status }}
                 </span>
               </td>
 
               <td>
                 <div class="action-btns">
-                  <button class="btn-sm btn-privileges" (click)="openPrivilegesModal(user)" title="Edit Role & Privileges">
+                  <button class="btn-sm btn-privileges" (click)="openPrivilegesModal(user)"
+                    title="Edit Role & Privileges">
                     <mat-icon>security</mat-icon> Privileges
                   </button>
 
@@ -163,7 +223,8 @@
                     <mat-icon>receipt</mat-icon> Orders
                   </button>
 
-                  <button class="btn-sm" [class.btn-danger]="user.status === 'Active'" [class.btn-success]="user.status === 'Suspended'" (click)="toggleUserStatus(user)">
+                  <button class="btn-sm" [class.btn-danger]="user.status === 'Active'"
+                    [class.btn-success]="user.status === 'Suspended'" (click)="toggleUserStatus(user)">
                     <mat-icon>{{ user.status === 'Active' ? 'block' : 'check_circle' }}</mat-icon>
                     {{ user.status === 'Active' ? 'Suspend' : 'Activate' }}
                   </button>
@@ -201,7 +262,7 @@
             <div class="biz-header-info">
               <h3>{{ biz.name }}</h3>
               <span class="biz-cat"><mat-icon>category</mat-icon> {{ biz.category }}</span>
-              <span class="biz-loc">📍 {{ biz.location }}</span>
+              <span class="biz-loc"><mat-icon>location_on</mat-icon> {{ biz.location }}</span>
             </div>
             <span class="verified-badge"><mat-icon>verified</mat-icon> Verified Studio</span>
           </div>
@@ -269,28 +330,37 @@
             <h4>Granted Access Privileges:</h4>
 
             <label class="check-item">
-              <input type="checkbox" [checked]="role.privileges.canView" (change)="toggleMatrixPrivilege(role, 'canView')" />
-              <span class="lbl-txt">👁️ <strong>Can View Dashboards & Listings</strong> - Access viewing interfaces.</span>
+              <input type="checkbox" [checked]="role.privileges.canView"
+                (change)="toggleMatrixPrivilege(role, 'canView')" />
+              <span class="lbl-txt"> <strong>Can View Dashboards & Listings</strong> - Access viewing
+                interfaces.</span>
             </label>
 
             <label class="check-item">
-              <input type="checkbox" [checked]="role.privileges.canEdit" (change)="toggleMatrixPrivilege(role, 'canEdit')" />
-              <span class="lbl-txt">✏️ <strong>Can Edit Profiles & Handiworks</strong> - Modify details & inventory.</span>
+              <input type="checkbox" [checked]="role.privileges.canEdit"
+                (change)="toggleMatrixPrivilege(role, 'canEdit')" />
+              <span class="lbl-txt"> <strong>Can Edit Profiles & Handiworks</strong> - Modify details &
+                inventory.</span>
             </label>
 
             <label class="check-item">
-              <input type="checkbox" [checked]="role.privileges.canDelete" (change)="toggleMatrixPrivilege(role, 'canDelete')" />
-              <span class="lbl-txt">❌ <strong>Can Delete Items & Accounts</strong> - Permanently remove records.</span>
+              <input type="checkbox" [checked]="role.privileges.canDelete"
+                (change)="toggleMatrixPrivilege(role, 'canDelete')" />
+              <span class="lbl-txt"> <strong>Can Delete Items & Accounts</strong> - Permanently remove records.</span>
             </label>
 
             <label class="check-item">
-              <input type="checkbox" [checked]="role.privileges.canApproveOrders" (change)="toggleMatrixPrivilege(role, 'canApproveOrders')" />
-              <span class="lbl-txt">✅ <strong>Can Approve/Confirm Orders</strong> - Confirm & execute customer bookings.</span>
+              <input type="checkbox" [checked]="role.privileges.canApproveOrders"
+                (change)="toggleMatrixPrivilege(role, 'canApproveOrders')" />
+              <span class="lbl-txt"><strong>Can Approve/Confirm Orders</strong> - Confirm & execute customer
+                bookings.</span>
             </label>
 
             <label class="check-item">
-              <input type="checkbox" [checked]="role.privileges.canManageRoles" (change)="toggleMatrixPrivilege(role, 'canManageRoles')" />
-              <span class="lbl-txt">🛡️ <strong>Can Manage System Roles</strong> - Modify role assignments & security.</span>
+              <input type="checkbox" [checked]="role.privileges.canManageRoles"
+                (change)="toggleMatrixPrivilege(role, 'canManageRoles')" />
+              <span class="lbl-txt"> <strong>Can Manage System Roles</strong> - Modify role assignments &
+                security.</span>
             </label>
           </div>
         </div>
@@ -361,7 +431,8 @@
               <td>{{ booking.bookingDate }}</td>
               <td><strong>${{ booking.totalPrice }}</strong></td>
               <td>
-                <span class="status-badge" [class.status-active]="booking.status === 'confirmed' || booking.status === 'completed'">
+                <span class="status-badge"
+                  [class.status-active]="booking.status === 'confirmed' || booking.status === 'completed'">
                   {{ booking.status | titlecase }}
                 </span>
               </td>
@@ -369,6 +440,129 @@
             }
           </tbody>
         </table>
+      </div>
+    </section>
+    }
+
+    <!-- TAB 6: TEAM MEMBERS MANAGEMENT -->
+    @if (activeTab() === 'team') {
+    <section class="admin-section">
+      <div class="section-title-bar admin-header-flex">
+        <div>
+          <h2>Platform Team Members Directory</h2>
+          <p>Add, update, or remove internal Voziba team members, leadership, and operational staff.</p>
+        </div>
+        <button class="btn-primary-action" (click)="openAddTeamModal()">
+          <mat-icon>person_add</mat-icon> Add Team Member
+        </button>
+      </div>
+
+      <div class="team-admin-grid">
+        @for (member of filteredTeam(); track member.id) {
+        <div class="team-admin-card">
+          <div class="team-card-top">
+            <img [src]="member.avatar" [alt]="member.name" class="team-card-avatar" />
+            <div class="team-card-badge-wrap">
+              <span class="status-badge"
+                [class.status-active]="member.status === 'Active'"
+                [class.status-leave]="member.status === 'On Leave'"
+                [class.status-suspended]="member.status === 'Inactive'">
+                {{ member.status }}
+              </span>
+            </div>
+          </div>
+
+          <div class="team-card-body">
+            <h3>{{ member.name }}</h3>
+            <span class="team-card-role">{{ member.role }}</span>
+            <p class="team-card-bio">{{ member.bio }}</p>
+
+            <div class="team-card-contact">
+              <p><mat-icon>email</mat-icon> <a [href]="'mailto:' + member.email">{{ member.email }}</a></p>
+              <p><mat-icon>phone</mat-icon> {{ member.phone }}</p>
+              <p><mat-icon>calendar_today</mat-icon> Joined {{ member.joinedDate | date:'mediumDate' }}</p>
+            </div>
+          </div>
+
+          <div class="team-card-actions">
+            <button class="btn-sm btn-edit-profile" (click)="openEditTeamModal(member)">
+              <mat-icon>edit</mat-icon> Edit
+            </button>
+            <button class="btn-sm" 
+              [class.btn-info]="member.status === 'Active'"
+              [class.btn-success]="member.status !== 'Active'"
+              (click)="toggleTeamStatus(member)"
+              title="Toggle Status">
+              <mat-icon>swap_horiz</mat-icon> {{ member.status === 'Active' ? 'Set Leave' : 'Set Active' }}
+            </button>
+            <button class="btn-sm btn-delete-biz" (click)="deleteTeamMember(member)" title="Remove Member">
+              <mat-icon>delete</mat-icon> Delete
+            </button>
+          </div>
+        </div>
+        } @empty {
+        <div class="empty-state-box full-width">
+          <mat-icon>group_off</mat-icon>
+          <h3>No team members found</h3>
+          <p>No team members match your search criteria. Click "Add Team Member" to create one.</p>
+        </div>
+        }
+      </div>
+    </section>
+    }
+
+    <!-- TAB 7: TESTIMONIES MANAGEMENT -->
+    @if (activeTab() === 'testimonies') {
+    <section class="admin-section">
+      <div class="section-title-bar flex-between">
+        <div>
+          <h2>Community Testimonies & Reviews Management</h2>
+          <p>Manage customer reviews, testimonials, ratings, and featured community feedback shown on the public marketplace.</p>
+        </div>
+        <button class="btn-primary-action" (click)="openAddTestimonyModal()">
+          <mat-icon>rate_review</mat-icon> Add New Testimony
+        </button>
+      </div>
+
+      <div class="testimonies-admin-grid">
+        @for (t of filteredTestimonies(); track t.id) {
+        <div class="testimony-admin-card">
+          <div class="t-card-header">
+            <div class="t-customer-info">
+              <img [src]="t.avatar" [alt]="t.customerName" class="t-avatar" />
+              <div>
+                <h4 class="t-name">{{ t.customerName }}</h4>
+                <span class="t-role">{{ t.customerRole }}</span>
+              </div>
+            </div>
+            <div class="t-rating-stars" [title]="t.rating + ' Out of 5 Stars'">
+              ★ {{ t.rating }}.0
+            </div>
+          </div>
+
+          <div class="t-card-body">
+            <div class="t-context-badge">
+              <mat-icon>work</mat-icon> <strong>{{ t.workTitle }}</strong> by <span>{{ t.creatorName }}</span>
+            </div>
+            <p class="t-comment-text">"{{ t.comment }}"</p>
+          </div>
+
+          <div class="t-card-footer">
+            <button class="btn-icon btn-edit" (click)="openEditTestimonyModal(t)" title="Edit Testimony">
+              <mat-icon>edit</mat-icon> Edit
+            </button>
+            <button class="btn-icon btn-delete" (click)="deleteTestimonyFromAdmin(t)" title="Delete Testimony">
+              <mat-icon>delete</mat-icon> Delete
+            </button>
+          </div>
+        </div>
+        } @empty {
+        <div class="empty-state-box full-width">
+          <mat-icon>rate_review</mat-icon>
+          <h3>No testimonies found</h3>
+          <p>No customer reviews match your search. Click "Add New Testimony" to create one.</p>
+        </div>
+        }
       </div>
     </section>
     }
@@ -386,12 +580,14 @@
     </div>
     <div class="modal-bdy">
       <div class="user-meta-summary">
-        <p><strong>Email:</strong> {{ editingPrivilegesUser.email }} | <strong>ID:</strong> {{ editingPrivilegesUser.id }}</p>
+        <p><strong>Email:</strong> {{ editingPrivilegesUser.email }} | <strong>ID:</strong> {{ editingPrivilegesUser.id
+          }}</p>
       </div>
 
       <div class="form-grp" style="margin-bottom: 1.25rem;">
         <label style="font-weight: 800; font-size: 0.8rem; text-transform: uppercase;">Assign System Role</label>
-        <select [(ngModel)]="editingPrivilegesUser.role" class="form-input" style="width: 100%; padding: 0.6rem; border-radius: 8px; border: 1px solid var(--slate-300); font-size: 0.9rem;">
+        <select [(ngModel)]="editingPrivilegesUser.role" class="form-input"
+          style="width: 100%; padding: 0.6rem; border-radius: 8px; border: 1px solid var(--slate-300); font-size: 0.9rem;">
           <option value="Consumer">Consumer</option>
           <option value="Business Owner">Business Owner</option>
           <option value="Moderator">Platform Moderator</option>
@@ -399,32 +595,33 @@
         </select>
       </div>
 
-      <h4 style="font-weight: 800; margin-bottom: 0.75rem; color: var(--slate-900);">Granular Privileges & Permissions:</h4>
+      <h4 style="font-weight: 800; margin-bottom: 0.75rem; color: var(--slate-900);">Granular Privileges & Permissions:
+      </h4>
 
       <div class="privileges-checklist">
         <label class="check-item">
           <input type="checkbox" [(ngModel)]="tempPrivileges.canView" />
-          <span>👁️ <strong>Can View Dashboards & Listings</strong></span>
+          <span> <strong>Can View Dashboards & Listings</strong></span>
         </label>
 
         <label class="check-item">
           <input type="checkbox" [(ngModel)]="tempPrivileges.canEdit" />
-          <span>✏️ <strong>Can Edit Profiles & Handiworks</strong></span>
+          <span> <strong>Can Edit Profiles & Handiworks</strong></span>
         </label>
 
         <label class="check-item">
           <input type="checkbox" [(ngModel)]="tempPrivileges.canDelete" />
-          <span>❌ <strong>Can Delete Listings & Accounts</strong></span>
+          <span> <strong>Can Delete Listings & Accounts</strong></span>
         </label>
 
         <label class="check-item">
           <input type="checkbox" [(ngModel)]="tempPrivileges.canApproveOrders" />
-          <span>✅ <strong>Can Approve & Confirm Customer Orders</strong></span>
+          <span> <strong>Can Approve & Confirm Customer Orders</strong></span>
         </label>
 
         <label class="check-item">
           <input type="checkbox" [(ngModel)]="tempPrivileges.canManageRoles" />
-          <span>🛡️ <strong>Can Manage Security & Roles</strong></span>
+          <span> <strong>Can Manage Security & Roles</strong></span>
         </label>
       </div>
 
@@ -522,4 +719,125 @@
 </div>
 }
 
+<!-- Modal: Add / Edit Team Member -->
+@if (showTeamModal()) {
+<div class="admin-modal-backdrop" (click)="closeTeamModal()">
+  <div class="admin-modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-hdr">
+      <h3>{{ editingTeamMember ? 'Edit Team Member' : 'Add New Team Member' }}</h3>
+      <button class="btn-close" (click)="closeTeamModal()">&times;</button>
+    </div>
+    <div class="modal-bdy form-grid">
+      <div class="form-grp">
+        <label>Full Name *</label>
+        <input type="text" [(ngModel)]="teamForm.name" placeholder="e.g. Amara Asante" class="form-input" required />
+      </div>
+
+      <div class="form-grp">
+        <label>Job Title / Role *</label>
+        <input type="text" [(ngModel)]="teamForm.role" placeholder="e.g. Founder & CEO" class="form-input" required />
+      </div>
+
+      <div class="form-grp">
+        <label>Email Address *</label>
+        <input type="email" [(ngModel)]="teamForm.email" placeholder="e.g. amara@voziba.com" class="form-input" required />
+      </div>
+
+      <div class="form-grp">
+        <label>Phone Number</label>
+        <input type="tel" [(ngModel)]="teamForm.phone" placeholder="e.g. +233 24 123 4567" class="form-input" />
+      </div>
+
+      <div class="form-grp full-width">
+        <label>Avatar Photo URL</label>
+        <input type="text" [(ngModel)]="teamForm.avatar" placeholder="https://..." class="form-input" />
+      </div>
+
+      <div class="form-grp">
+        <label>Status</label>
+        <select [(ngModel)]="teamForm.status" class="form-input">
+          <option value="Active">Active</option>
+          <option value="On Leave">On Leave</option>
+          <option value="Inactive">Inactive</option>
+        </select>
+      </div>
+
+      <div class="form-grp full-width">
+        <label>Short Bio / Description</label>
+        <textarea [(ngModel)]="teamForm.bio" rows="3" placeholder="Briefly describe their role and experience..." class="form-input"></textarea>
+      </div>
+
+      <div class="form-grp full-width modal-actions">
+        <button class="btn-secondary" (click)="closeTeamModal()">Cancel</button>
+        <button class="btn-primary" (click)="saveTeamMember()">
+          {{ editingTeamMember ? 'Save Changes' : 'Add Team Member' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+}
+
+<!-- Modal: Add / Edit Testimony -->
+@if (showTestimonyModal()) {
+<div class="admin-modal-backdrop" (click)="closeTestimonyModal()">
+  <div class="admin-modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-hdr">
+      <h3>{{ editingTestimonyId() !== null ? 'Edit Customer Testimony' : 'Add New Community Testimony' }}</h3>
+      <button class="btn-close" (click)="closeTestimonyModal()">&times;</button>
+    </div>
+    <div class="modal-bdy form-grid">
+      <div class="form-grp">
+        <label>Customer Name *</label>
+        <input type="text" [value]="testimonyForm().customerName" (input)="updateTestimonyFormField('customerName', $any($event.target).value)" placeholder="e.g. Sarah Jenkins" class="form-input" required />
+      </div>
+
+      <div class="form-grp">
+        <label>Customer Role / Tag *</label>
+        <input type="text" [value]="testimonyForm().customerRole" (input)="updateTestimonyFormField('customerRole', $any($event.target).value)" placeholder="e.g. Homeowner & Collector" class="form-input" required />
+      </div>
+
+      <div class="form-grp full-width">
+        <label>Customer Avatar Photo URL</label>
+        <input type="text" [value]="testimonyForm().avatar" (input)="updateTestimonyFormField('avatar', $any($event.target).value)" placeholder="https://..." class="form-input" />
+      </div>
+
+      <div class="form-grp">
+        <label>Artisan / Creator Studio Name *</label>
+        <input type="text" [value]="testimonyForm().creatorName" (input)="updateTestimonyFormField('creatorName', $any($event.target).value)" placeholder="e.g. Elias & Co. Woodworks" class="form-input" required />
+      </div>
+
+      <div class="form-grp">
+        <label>Work Title / Craft Listing *</label>
+        <input type="text" [value]="testimonyForm().workTitle" (input)="updateTestimonyFormField('workTitle', $any($event.target).value)" placeholder="e.g. Hand-Carved Walnut Dining Table" class="form-input" required />
+      </div>
+
+      <div class="form-grp">
+        <label>Star Rating (1 to 5 Stars)</label>
+        <select [value]="testimonyForm().rating" (change)="updateTestimonyFormField('rating', +$any($event.target).value)" class="form-input">
+          <option [value]="5">★★★★★ (5 Stars)</option>
+          <option [value]="4">★★★★☆ (4 Stars)</option>
+          <option [value]="3">★★★☆☆ (3 Stars)</option>
+          <option [value]="2">★★☆☆☆ (2 Stars)</option>
+          <option [value]="1">★☆☆☆☆ (1 Star)</option>
+        </select>
+      </div>
+
+      <div class="form-grp full-width">
+        <label>Customer Review Comment *</label>
+        <textarea [value]="testimonyForm().comment" (input)="updateTestimonyFormField('comment', $any($event.target).value)" rows="4" placeholder="Enter customer's review feedback..." class="form-input" required></textarea>
+      </div>
+
+      <div class="form-grp full-width modal-actions">
+        <button class="btn-secondary" (click)="closeTestimonyModal()">Cancel</button>
+        <button class="btn-primary" (click)="saveTestimonyFromAdmin()">
+          {{ editingTestimonyId() !== null ? 'Save Changes' : 'Publish Testimony' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+}
+
 <app-footer></app-footer>
+}

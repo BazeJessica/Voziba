@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed, HostListener } from '@angular/core';
 import { UserService, AVATAR_PRESETS } from '../services/user.service';
 import { WorksService } from '../services/works.service';
 import { bookingType, workType, userProfileType } from '../models/types';
@@ -23,7 +23,7 @@ export class UserProfileComponent {
     }
   }
 
-  activeTab: 'details' | 'bookings' = 'details';
+  activeTab: 'details' | 'bookings' = 'bookings';
   bookingStatusFilter = signal<'all' | 'pending' | 'confirmed' | 'completed' | 'cancelled'>('all');
   bookingSearchQuery = signal<string>('');
 
@@ -31,6 +31,26 @@ export class UserProfileComponent {
   showAvatarPicker = false;
   saveSuccessMessage = '';
   avatarPresets = AVATAR_PRESETS;
+
+  // Dropdown menu state for booking cards
+  openBookingMenuId: string | null = null;
+
+  toggleBookingMenu(id: string) {
+    if (this.openBookingMenuId === id) {
+      this.openBookingMenuId = null;
+    } else {
+      this.openBookingMenuId = id;
+    }
+  }
+
+  closeBookingMenu() {
+    this.openBookingMenuId = null;
+  }
+
+  @HostListener('document:click')
+  onDocumentClick() {
+    this.closeBookingMenu();
+  }
 
   // Selected work for modal popup if consumer clicks "View Work" on a booking
   selectedWorkForDetails: workType | null = null;
@@ -130,6 +150,33 @@ export class UserProfileComponent {
   selectAvatarPreset(avatarUrl: string) {
     this.editForm.avatar = avatarUrl;
     this.showAvatarPicker = false;
+    this.userService.updateProfile({ avatar: avatarUrl });
+  }
+
+  onAvatarClick(fileInput: HTMLInputElement) {
+    fileInput.click();
+  }
+
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      if (!file.type.startsWith('image/')) {
+        alert('Please select a valid image file (PNG, JPG, WEBP, etc.).');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        const dataUrl = e.target.result as string;
+        this.editForm.avatar = dataUrl;
+        this.userService.updateProfile({ avatar: dataUrl });
+        this.saveSuccessMessage = 'Profile picture updated successfully!';
+        setTimeout(() => {
+          this.saveSuccessMessage = '';
+        }, 4000);
+      };
+      reader.readAsDataURL(file);
+    }
   }
 
   saveProfile() {
@@ -153,7 +200,7 @@ export class UserProfileComponent {
     }
   }
 
-  viewWork(workId: number) {
+  viewWork(workId: number | string) {
     const work = this.worksService.getWorkById(workId);
     if (work) {
       this.selectedWorkForDetails = work;
