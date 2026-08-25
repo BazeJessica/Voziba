@@ -1,12 +1,32 @@
 <div class="profile-page-container">
+  <!-- Hidden File Input for uploading custom picture -->
+  <input #fileInput type="file" accept="image/*" (change)="onFileSelected($event)" style="display: none;" />
+
   <!-- Profile Header Hero -->
   <div class="profile-header-card">
     <div class="profile-banner"></div>
 
     <div class="profile-header-main">
-      <div class="avatar-container">
+      <div class="avatar-container" (click)="onAvatarClick(fileInput)"
+        title="Click to upload or update profile picture">
         <img [src]="user().avatar" [alt]="user().name" class="profile-avatar" />
-        <span class="consumer-badge" title="Verified Consumer">Consumer</span>
+        <div class="avatar-hover-overlay">
+          <mat-icon>photo_camera</mat-icon>
+          <span>Change</span>
+        </div>
+
+        <div class="avatar-badge-group">
+          @if (!isEditing) {
+          <button class="btn-avatar-edit" (click)="startEditing(); $event.stopPropagation();"
+            title="Edit Consumer Profile">
+            <mat-icon>edit</mat-icon> Edit Profile
+          </button>
+          } @else {
+          <button class="btn-avatar-save" (click)="saveProfile(); $event.stopPropagation();" title="Save Profile">
+            <mat-icon>check</mat-icon> Save
+          </button>
+          }
+        </div>
       </div>
 
       <div class="profile-identity">
@@ -68,16 +88,6 @@
       </div>
     </div>
 
-    <!-- Navigation Tabs -->
-    <div class="profile-tabs-nav">
-      <button class="tab-btn" [class.active]="activeTab === 'details'" (click)="switchTab('details')">
-        <mat-icon>person</mat-icon> Personal Details
-      </button>
-      <button class="tab-btn" [class.active]="activeTab === 'bookings'" (click)="switchTab('bookings')">
-        <mat-icon>receipt_long</mat-icon> My Bookings & Orders
-        <span class="tab-count-badge">{{ totalBookingsCount() }}</span>
-      </button>
-    </div>
   </div>
 
   <!-- Success Notification Toast -->
@@ -88,69 +98,9 @@
   </div>
   }
 
-  <!-- TAB 1: Personal Details Content -->
-  @if (activeTab === 'details') {
+  <!-- EDIT MODE FORM (Shown when clicking Edit Profile on avatar) -->
+  @if (isEditing) {
   <div class="tab-content details-tab-content">
-
-    <!-- VIEW MODE -->
-    @if (!isEditing) {
-    <div class="details-card-wrapper">
-      <div class="details-section-header">
-        <h2>Consumer Personal Information</h2>
-      </div>
-
-      <div class="details-grid">
-        <div class="detail-item">
-          <label><mat-icon>badge</mat-icon> Full Name</label>
-          <div class="detail-value">{{ user().name }}</div>
-        </div>
-
-        <div class="detail-item">
-          <label><mat-icon>mail</mat-icon> Email Address</label>
-          <div class="detail-value">{{ user().email }}</div>
-        </div>
-
-        <div class="detail-item">
-          <label><mat-icon>phone</mat-icon> Phone Number</label>
-          <div class="detail-value">{{ user().phone || 'Not specified' }}</div>
-        </div>
-
-        <div class="detail-item">
-          <label><mat-icon>home</mat-icon> Street Address</label>
-          <div class="detail-value">{{ user().address || 'Not specified' }}</div>
-        </div>
-
-        <div class="detail-item">
-          <label><mat-icon>location_city</mat-icon> City & State</label>
-          <div class="detail-value">{{ user().city || 'Not specified' }}</div>
-        </div>
-
-        <div class="detail-item">
-          <label><mat-icon>public</mat-icon> Country</label>
-          <div class="detail-value">{{ user().country || 'Not specified' }}</div>
-        </div>
-      </div>
-
-      <div class="detail-full-width">
-        <label><mat-icon>notes</mat-icon> About / Craft Preferences</label>
-        <div class="detail-bio">{{ user().bio || 'No bio added yet.' }}</div>
-      </div>
-
-      <div class="detail-full-width">
-        <label><mat-icon>category</mat-icon> Preferred Craft Categories</label>
-        <div class="category-chips">
-          @for (cat of user().preferredCategories; track cat) {
-          <span class="cat-chip"><mat-icon>check</mat-icon> {{ cat }}</span>
-          } @empty {
-          <span class="no-cats">No category preferences selected yet.</span>
-          }
-        </div>
-      </div>
-    </div>
-    }
-
-    <!-- EDIT MODE -->
-    @else {
     <div class="details-card-wrapper edit-mode-active">
       <div class="details-section-header">
         <h2>Edit Consumer Profile</h2>
@@ -167,16 +117,26 @@
       <form (ngSubmit)="saveProfile()" class="edit-form">
         <!-- Avatar Change Section -->
         <div class="avatar-edit-section">
-          <div class="avatar-preview">
+          <div class="avatar-preview" (click)="onAvatarClick(fileInput)"
+            title="Click image to upload or update picture">
             <img [src]="editForm.avatar" [alt]="editForm.name" />
+            <div class="avatar-preview-overlay">
+              <mat-icon>photo_camera</mat-icon>
+              <span>Upload</span>
+            </div>
           </div>
           <div class="avatar-controls">
-            <label class="form-label">Profile Avatar</label>
-            <input type="text" class="form-input" [(ngModel)]="editForm.avatar" name="avatarUrl"
-              placeholder="Paste Image URL" />
-            <button type="button" class="btn-preset-avatar" (click)="showAvatarPicker = !showAvatarPicker">
-              <mat-icon>photo_library</mat-icon> Pick from Sample Avatars
-            </button>
+            <label class="form-label">Profile Picture / Avatar</label>
+            <div class="avatar-btn-row">
+              <button type="button" class="btn-upload-photo" (click)="onAvatarClick(fileInput)">
+                <mat-icon>add_a_photo</mat-icon> Upload Picture
+              </button>
+              <button type="button" class="btn-preset-avatar" (click)="showAvatarPicker = !showAvatarPicker">
+                <mat-icon>photo_library</mat-icon> Pick Sample Avatar
+              </button>
+            </div>
+            <input type="text" class="form-input avatar-url-input" [(ngModel)]="editForm.avatar" name="avatarUrl"
+              placeholder="Or paste Image URL (https://...)" />
           </div>
         </div>
 
@@ -202,22 +162,26 @@
 
           <div class="form-group">
             <label class="form-label">Phone Number</label>
-            <input type="tel" class="form-input" [(ngModel)]="editForm.phone" name="phone" placeholder="+1 (555) 000-0000" />
+            <input type="tel" class="form-input" [(ngModel)]="editForm.phone" name="phone"
+              placeholder="+1 (555) 000-0000" />
           </div>
 
           <div class="form-group">
             <label class="form-label">Street Address</label>
-            <input type="text" class="form-input" [(ngModel)]="editForm.address" name="address" placeholder="123 Main St" />
+            <input type="text" class="form-input" [(ngModel)]="editForm.address" name="address"
+              placeholder="123 Main St" />
           </div>
 
           <div class="form-group">
             <label class="form-label">City & State</label>
-            <input type="text" class="form-input" [(ngModel)]="editForm.city" name="city" placeholder="San Francisco, CA" />
+            <input type="text" class="form-input" [(ngModel)]="editForm.city" name="city"
+              placeholder="San Francisco, CA" />
           </div>
 
           <div class="form-group">
             <label class="form-label">Country</label>
-            <input type="text" class="form-input" [(ngModel)]="editForm.country" name="country" placeholder="United States" />
+            <input type="text" class="form-input" [(ngModel)]="editForm.country" name="country"
+              placeholder="United States" />
           </div>
         </div>
 
@@ -248,12 +212,11 @@
         </div>
       </form>
     </div>
-    }
   </div>
   }
 
-  <!-- TAB 2: My Bookings & Orders Content -->
-  @if (activeTab === 'bookings') {
+  <!-- MAIN VIEW: My Bookings & Orders Content (Displayed directly) -->
+  @else {
   <div class="tab-content bookings-tab-content">
     <div class="bookings-control-bar">
       <!-- Status Filter Tabs -->
@@ -282,7 +245,8 @@
       <!-- Search Input -->
       <div class="booking-search-box">
         <mat-icon>search</mat-icon>
-        <input type="text" [value]="bookingSearchQuery()" (input)="onSearchInput($event)" placeholder="Search by booking ID, title or maker..." />
+        <input type="text" [value]="bookingSearchQuery()" (input)="onSearchInput($event)"
+          placeholder="Search by booking ID, title or maker..." />
         @if (bookingSearchQuery()) {
         <button class="clear-search" (click)="clearSearch()">
           <mat-icon>close</mat-icon>
@@ -304,9 +268,39 @@
             </span>
           </div>
 
-          <div class="status-badge" [ngClass]="getStatusBadgeClass(booking.status)">
-            <span class="status-dot"></span>
-            {{ getStatusLabel(booking.status) }}
+          <div class="header-right-actions">
+            <div class="status-badge" [ngClass]="getStatusBadgeClass(booking.status)">
+              <span class="status-dot"></span>
+              {{ getStatusLabel(booking.status) }}
+            </div>
+
+            <!-- Hamburger Dropdown Menu close to Status Button -->
+            <div class="booking-menu-wrapper">
+              <button type="button" class="btn-booking-menu"
+                (click)="toggleBookingMenu(booking.id); $event.stopPropagation()" title="Options Menu">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+
+              @if (openBookingMenuId === booking.id) {
+              <div class="booking-dropdown-menu" (click)="$event.stopPropagation()">
+                <button type="button" class="dropdown-item" (click)="viewWork(booking.workId); closeBookingMenu()">
+                  <mat-icon>visibility</mat-icon> View Handiwork
+                </button>
+
+                @if (booking.status === 'pending' || booking.status === 'confirmed') {
+                <button type="button" class="dropdown-item danger"
+                  (click)="cancelBooking(booking.id); closeBookingMenu()">
+                  <mat-icon>cancel</mat-icon> Cancel Booking
+                </button>
+                }
+
+                <a [href]="'mailto:' + booking.customerEmail + '?subject=Query regarding booking ' + booking.id"
+                  class="dropdown-item" (click)="closeBookingMenu()">
+                  <mat-icon>mail_outline</mat-icon> Contact Maker
+                </a>
+              </div>
+              }
+            </div>
           </div>
         </div>
 
@@ -347,42 +341,31 @@
 
           <!-- Status Timeline Visualization -->
           <div class="status-timeline">
-            <div class="timeline-step" [class.step-active]="true" [class.step-complete]="booking.status !== 'pending' && booking.status !== 'cancelled'">
+            <div class="timeline-step" [class.step-active]="true"
+              [class.step-complete]="booking.status !== 'pending' && booking.status !== 'cancelled'">
               <div class="step-circle"><mat-icon>check</mat-icon></div>
               <span class="step-label">Requested</span>
             </div>
 
-            <div class="timeline-line" [class.line-active]="booking.status === 'confirmed' || booking.status === 'completed'"></div>
+            <div class="timeline-line"
+              [class.line-active]="booking.status === 'confirmed' || booking.status === 'completed'"></div>
 
-            <div class="timeline-step" [class.step-active]="booking.status === 'confirmed' || booking.status === 'completed'" [class.step-complete]="booking.status === 'completed'">
-              <div class="step-circle"><mat-icon>{{ booking.status === 'completed' ? 'check' : 'precision_manufacturing' }}</mat-icon></div>
+            <div class="timeline-step"
+              [class.step-active]="booking.status === 'confirmed' || booking.status === 'completed'"
+              [class.step-complete]="booking.status === 'completed'">
+              <div class="step-circle"><mat-icon>{{ booking.status === 'completed' ? 'check' : 'precision_manufacturing'
+                  }}</mat-icon></div>
               <span class="step-label">Confirmed & In Production</span>
             </div>
 
             <div class="timeline-line" [class.line-active]="booking.status === 'completed'"></div>
 
-            <div class="timeline-step" [class.step-active]="booking.status === 'completed'" [class.step-complete]="booking.status === 'completed'">
+            <div class="timeline-step" [class.step-active]="booking.status === 'completed'"
+              [class.step-complete]="booking.status === 'completed'">
               <div class="step-circle"><mat-icon>card_giftcard</mat-icon></div>
               <span class="step-label">Completed & Delivered</span>
             </div>
           </div>
-        </div>
-
-        <!-- Card Footer Actions -->
-        <div class="card-footer">
-          <button class="btn-view-work" (click)="viewWork(booking.workId)">
-            <mat-icon>visibility</mat-icon> View Handiwork
-          </button>
-
-          @if (booking.status === 'pending' || booking.status === 'confirmed') {
-          <button class="btn-cancel-booking" (click)="cancelBooking(booking.id)">
-            <mat-icon>cancel</mat-icon> Cancel Booking
-          </button>
-          }
-
-          <a [href]="'mailto:' + booking.customerEmail + '?subject=Query regarding booking ' + booking.id" class="btn-contact-maker">
-            <mat-icon>mail_outline</mat-icon> Contact Maker
-          </a>
         </div>
       </div>
       } @empty {
@@ -403,36 +386,6 @@
   </div>
   }
 
-  <!-- Bottom Account Actions Section -->
-  <div class="bottom-account-actions-card">
-    <div class="actions-meta">
-      <div class="actions-icon">
-        <mat-icon>manage_accounts</mat-icon>
-      </div>
-      <div class="actions-text">
-        <h3>Account & Session Management</h3>
-        <p>Make changes to your consumer profile settings or log out of your active Voziba session.</p>
-      </div>
-    </div>
-
-    <div class="actions-btn-group">
-      @if (!isEditing) {
-      <button class="btn-bottom-edit" (click)="startEditing()">
-        <mat-icon>edit</mat-icon> Edit Profile
-      </button>
-      <button class="btn-bottom-logout" (click)="onLogout()" title="Log out of Consumer Account">
-        <mat-icon>logout</mat-icon> Log Out
-      </button>
-      } @else {
-      <button class="btn-bottom-save" (click)="saveProfile()">
-        <mat-icon>check</mat-icon> Save Changes
-      </button>
-      <button class="btn-bottom-cancel" (click)="cancelEditing()">
-        <mat-icon>close</mat-icon> Cancel
-      </button>
-      }
-    </div>
-  </div>
 </div>
 
 <!-- Modal Popups for Viewing Work Details from Profile -->
