@@ -57,8 +57,8 @@ export class LoginComponent {
         role: this.role
       });
 
-      const roleTitle = res.detectedRole === 'business_owner' ? 'Business Owner' : 'Consumer';
-      const destination = res.detectedRole === 'business_owner' ? 'Business Dashboard' : 'Consumer Profile';
+      const roleTitle = this.role === 'business_owner' ? 'Business Owner' : 'Consumer';
+      const destination = this.role === 'business_owner' ? 'Business Dashboard' : 'Consumer Profile';
 
       this.successMessage = `Logged in as ${roleTitle}! Redirecting to ${destination}...`;
 

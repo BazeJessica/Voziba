@@ -153,7 +153,7 @@ export class UserProfileComponent {
     }
   }
 
-  viewWork(workId: number) {
+  viewWork(workId: number | string) {
     const work = this.worksService.getWorkById(workId);
     if (work) {
       this.selectedWorkForDetails = work;
