@@ -1,0 +1,151 @@
+<div class="about-page">
+
+  <section class="about-hero">
+    <div class="about-hero-content">
+      <span class="section-eyebrow">Our Story &amp; Heritage</span>
+      <h1>Bridging Master Makers &amp; the World</h1>
+      <p>
+        Voziba was founded on a simple principle: the finest creations are shaped by human hands. We exist to empower independent artisans and connect discerning buyers with authentic, custom-crafted handiworks.
+      </p>
+    </div>
+  </section>
+
+  <section class="stats-strip-section">
+    <div class="section-container">
+      <div class="stats-grid">
+        @for (stat of platformStats; track stat.label) {
+        <div class="stat-card">
+          <div class="stat-icon-wrap">
+            <mat-icon>{{ stat.icon }}</mat-icon>
+          </div>
+          <div class="stat-info">
+            <span class="stat-val">{{ stat.value }}</span>
+            <span class="stat-lbl">{{ stat.label }}</span>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="mission-section">
+    <div class="section-container">
+      <div class="mission-box">
+        <div class="mission-badge">
+          <mat-icon>explore</mat-icon>
+          <span>Our Core Mission</span>
+        </div>
+        <h2>Cultivating a Sustainable Ecosystem for Handcrafted Excellence</h2>
+        <p>
+          We provide independent woodworkers, tailors, ceramicists, jewelers, and artists with modern digital tools to run their workshops, publish listings, manage customer orders, and thrive in an automated global marketplace.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="values-section">
+    <div class="section-container">
+      <div class="section-header text-center">
+        <span class="eyebrow">Pillars of Our Platform</span>
+        <h2>What We Stand For</h2>
+      </div>
+      <div class="values-grid">
+        @for (v of values; track v.title) {
+        <div class="value-card">
+          <div class="value-icon-wrap">
+            <mat-icon>{{ v.icon }}</mat-icon>
+          </div>
+          <h3>{{ v.title }}</h3>
+          <p>{{ v.desc }}</p>
+        </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="guarantees-section">
+    <div class="section-container">
+      <div class="section-header text-center">
+        <span class="eyebrow">Confidence &amp; Safety</span>
+        <h2>The Voziba Guarantee</h2>
+      </div>
+      <div class="guarantees-grid">
+        @for (g of guarantees; track g.title) {
+        <div class="guarantee-card">
+          <div class="g-icon-circle">
+            <mat-icon>{{ g.icon }}</mat-icon>
+          </div>
+          <h3>{{ g.title }}</h3>
+          <p>{{ g.desc }}</p>
+        </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="team-section">
+    <div class="section-container">
+      <div class="section-header text-center">
+        <span class="eyebrow">The Leadership Team</span>
+        <h2>Meet the People Behind Voziba</h2>
+      </div>
+      <div class="team-grid">
+        @for (member of teamMembers; track member.name) {
+        <div class="team-card">
+          <div class="avatar-wrap">
+            <img [src]="member.avatar" [alt]="member.name" class="team-avatar" />
+          </div>
+          <h3>{{ member.name }}</h3>
+          <span class="team-role">{{ member.role }}</span>
+          <p>{{ member.bio }}</p>
+        </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="about-faq-section">
+    <div class="section-container">
+      <div class="section-header text-center">
+        <span class="eyebrow">Got Questions?</span>
+        <h2>Frequently Asked Questions</h2>
+      </div>
+
+      <div class="faq-accordion-list">
+        @for (faq of faqs; track faq.q; let idx = $index) {
+        <div class="faq-item" [class.open]="openFaqIndex === idx" (click)="toggleFaq(idx)">
+          <div class="faq-question-row">
+            <h3>{{ faq.q }}</h3>
+            <mat-icon class="faq-toggle-icon">expand_more</mat-icon>
+          </div>
+          @if (openFaqIndex === idx) {
+          <div class="faq-answer-row">
+            <p>{{ faq.a }}</p>
+          </div>
+          }
+        </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="about-cta-banner">
+    <div class="section-container">
+      <div class="cta-banner-content">
+        <h2>Are You a Skilled Artisan or Maker?</h2>
+        <p>Join over 500+ verified craftsmen showcasing bespoke creations and receiving custom bookings on Voziba.</p>
+        <div class="cta-actions">
+          <a routerLink="/signup" class="btn-cta-primary">
+            <mat-icon>storefront</mat-icon> Join as a Business Owner
+          </a>
+          <a routerLink="/browse" class="btn-cta-secondary">
+            <mat-icon>explore</mat-icon> Explore All Handiworks
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<app-footer></app-footer>

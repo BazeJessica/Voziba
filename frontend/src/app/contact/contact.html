@@ -1,0 +1,143 @@
+<div class="contact-page">
+
+  <section class="contact-hero">
+    <div class="contact-hero-content">
+      <span class="eyebrow">Get In Touch</span>
+      <h1>We'd Love to Hear From You</h1>
+      <p>Whether you have a question about custom bookings, artisan onboarding, or platform support, our dedicated team is here to help.</p>
+    </div>
+  </section>
+
+  <section class="departments-section">
+    <div class="contact-container">
+      <div class="dept-grid">
+        @for (dept of departments; track dept.title) {
+        <div class="dept-card">
+          <div class="dept-icon-wrap">
+            <mat-icon>{{ dept.icon }}</mat-icon>
+          </div>
+          <h3>{{ dept.title }}</h3>
+          <p>{{ dept.desc }}</p>
+          <a [href]="'mailto:' + dept.email" class="dept-email-link">
+            <mat-icon>mail_outline</mat-icon> {{ dept.email }}
+          </a>
+        </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="contact-body">
+    <div class="contact-container">
+      <div class="contact-inner">
+
+        <aside class="contact-channels">
+          <h2>Direct Contact Channels</h2>
+          
+          <div class="channels-list">
+            @for (ch of contactChannels; track ch.label) {
+            <div class="channel-card">
+              <div class="channel-icon">
+                <mat-icon>{{ ch.icon }}</mat-icon>
+              </div>
+              <div class="channel-info">
+                <span class="channel-label">{{ ch.label }}</span>
+                @if (ch.href) {
+                <a [href]="ch.href" class="channel-value">{{ ch.value }}</a>
+                } @else {
+                <span class="channel-value no-link">{{ ch.value }}</span>
+                }
+              </div>
+            </div>
+            }
+          </div>
+
+          <div class="offices-block">
+            <h3>Global Office Hubs</h3>
+            @for (off of offices; track off.city) {
+            <div class="office-card">
+              <div class="office-header">
+                <mat-icon>{{ off.icon }}</mat-icon>
+                <strong>{{ off.city }}</strong>
+              </div>
+              <p class="off-addr">{{ off.address }}</p>
+              <span class="off-hours"><mat-icon>schedule</mat-icon> {{ off.hours }}</span>
+            </div>
+            }
+          </div>
+
+          <div class="response-note">
+            <mat-icon>verified</mat-icon>
+            <span>Guaranteed Response: <strong>under 24 hours</strong></span>
+          </div>
+        </aside>
+
+        <div class="contact-form-wrap">
+          @if (!submitted) {
+          <form class="contact-form" (ngSubmit)="onSubmit()">
+            <h2>Send Us a Message</h2>
+            <p class="form-subtext">Fill out the form below and an artisan support specialist will get back to you promptly.</p>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="contact-name">Your Full Name *</label>
+                <input id="contact-name" type="text" placeholder="e.g. Jessica Miller"
+                  [(ngModel)]="form.name" name="name" required />
+              </div>
+              <div class="form-group">
+                <label for="contact-email">Email Address *</label>
+                <input id="contact-email" type="email" placeholder="you@example.com"
+                  [(ngModel)]="form.email" name="email" required />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="contact-topic">Enquiry Category *</label>
+              <select id="contact-topic" [(ngModel)]="form.topic" name="topic">
+                @for (t of enquiryTopics; track t) {
+                <option [value]="t">{{ t }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="contact-subject">Subject</label>
+              <input id="contact-subject" type="text" placeholder="Brief subject description..."
+                [(ngModel)]="form.subject" name="subject" />
+            </div>
+
+            <div class="form-group">
+              <label for="contact-message">Your Message *</label>
+              <textarea id="contact-message" rows="6" placeholder="How can we assist you with your handiworks or studio listing..."
+                [(ngModel)]="form.message" name="message" required></textarea>
+            </div>
+
+            <button type="submit" class="btn-send" [class.loading]="submitting" [disabled]="submitting">
+              @if (submitting) {
+              <mat-icon class="spin-icon">autorenew</mat-icon>
+              <span>Sending Message...</span>
+              } @else {
+              <mat-icon>send</mat-icon>
+              <span>Send Message</span>
+              }
+            </button>
+          </form>
+          } @else {
+          <div class="success-state">
+            <div class="success-icon-ring">
+              <mat-icon>check_circle</mat-icon>
+            </div>
+            <h2>Message Delivered Successfully!</h2>
+            <p>Thank you for reaching out to Voziba. An artisan specialist has received your message regarding <strong>"{{ form.topic }}"</strong> and will respond within 24 hours.</p>
+            <button class="btn-reset" (click)="resetForm()">Send Another Message</button>
+          </div>
+          }
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<app-footer></app-footer>

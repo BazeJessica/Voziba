@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
 
 import { routes } from './app.routes';
 import { App } from './app';
@@ -19,6 +20,10 @@ import { AdminPortalComponent } from './admin-portal/admin-portal';
 import { SignupComponent } from './signup/signup';
 import { LoginComponent } from './login/login';
 import { Footer } from './footer/footer';
+import { AboutComponent } from './about/about';
+import { ContactComponent } from './contact/contact';
+import { BrowseHandiworksComponent } from './browse-handiworks/browse-handiworks';
+import { CategoriesPageComponent } from './categories/categories';
 import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
@@ -37,7 +42,11 @@ import { MatIconModule } from '@angular/material/icon';
     AdminPortalComponent,
     SignupComponent,
     LoginComponent,
-    Footer
+    Footer,
+    AboutComponent,
+    ContactComponent,
+    BrowseHandiworksComponent,
+    CategoriesPageComponent
   ],
   imports: [
     BrowserModule,
@@ -45,7 +54,7 @@ import { MatIconModule } from '@angular/material/icon';
     RouterModule.forRoot(routes),
     MatIconModule
   ],
-  providers: [],
+  providers: [provideHttpClient()],
   bootstrap: [App]
 })
 export class AppModule { }
