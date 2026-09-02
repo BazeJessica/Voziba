@@ -28,15 +28,15 @@ export class LoginComponent {
 
   useDemoConsumer() {
     this.role = 'consumer';
-    this.email = 'jessica.m@example.com';
+    this.email = 'jessica@example.com';
     this.password = 'password123';
     this.onSubmit();
   }
 
   useDemoBusinessOwner() {
     this.role = 'business_owner';
-    this.email = 'elias.woodworks@example.com';
-    this.password = 'password123';
+    this.email = 'elias@woodworks.com';
+    this.password = 'artisan2026';
     this.onSubmit();
   }
 
@@ -54,6 +54,7 @@ export class LoginComponent {
     setTimeout(() => {
       const res = this.userService.loginWithRole({
         email: this.email.trim(),
+        password: this.password,
         role: this.role
       });
 

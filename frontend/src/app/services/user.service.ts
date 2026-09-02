@@ -1,4 +1,5 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { userProfileType } from '../models/types';
 
 const DEFAULT_PROFILE: userProfileType = {
@@ -27,6 +28,7 @@ export const AVATAR_PRESETS = [
 export interface SignupParams {
   name: string;
   email: string;
+  password: string;
   role: 'consumer' | 'business_owner';
   phone?: string;
   businessName?: string;
@@ -35,6 +37,7 @@ export interface SignupParams {
 
 export interface LoginParams {
   email: string;
+  password: string;
   role: 'consumer' | 'business_owner';
   name?: string;
 }
@@ -43,6 +46,8 @@ export interface LoginParams {
   providedIn: 'root'
 })
 export class UserService {
+  private apiUrl = 'http://localhost:3001/api';
+  private http = inject(HttpClient);
   readonly profile = signal<userProfileType>(this.loadProfile());
   readonly isLoggedIn = signal<boolean>(this.loadLoginState());
   readonly userRole = signal<'consumer' | 'business_owner'>(this.loadUserRole());
@@ -88,7 +93,13 @@ export class UserService {
   }
 
   signup(params: SignupParams): { success: boolean; targetRoute: string } {
-    const updatedProfile: userProfileType = {
+    this.http.post<any>(`${this.apiUrl}/auth/signup`, params).subscribe({
+      next: (res) => {
+         console.log('Signup success', res);
+      }
+    });
+
+    const updatedProfile = {
       ...this.profile(),
       id: `USR-${Math.floor(1000 + Math.random() * 9000)}`,
       name: params.name,
@@ -98,32 +109,41 @@ export class UserService {
       bio: params.bio || (params.role === 'business_owner' ? `Master Artisan & Owner of ${params.businessName || 'Handcraft Studio'}` : this.profile().bio),
       joinedDate: 'Just now'
     };
-
-    this.profile.set(updatedProfile);
+    this.profile.set(updatedProfile as any);
     this.userRole.set(params.role);
     this.isLoggedIn.set(true);
-
     localStorage.setItem('voziba_user_profile', JSON.stringify(updatedProfile));
     localStorage.setItem('voziba_user_role', params.role);
     localStorage.setItem('voziba_is_logged_in', JSON.stringify(true));
-
+    
     const targetRoute = params.role === 'consumer' ? '/profile' : '/business-dashboard';
     return { success: true, targetRoute };
   }
 
   loginWithRole(params: LoginParams): { success: boolean; targetRoute: string } {
-    const current = this.profile();
-    const updatedProfile: userProfileType = {
-      ...current,
-      email: params.email,
-      name: params.name || (current.email === params.email ? current.name : params.email.split('@')[0]),
-      role: params.role
-    };
-
-    this.profile.set(updatedProfile);
+    this.http.post<any>(`${this.apiUrl}/auth/login`, { email: params.email, password: params.password, role: params.role }).subscribe({
+      next: (res) => {
+        const updatedProfile = {
+          ...this.profile(),
+          email: res.user?.email || params.email,
+          name: res.user?.name || params.name || params.email.split('@')[0],
+          role: res.user?.role || params.role
+        };
+        this.profile.set(updatedProfile);
+        this.userRole.set(updatedProfile.role as any);
+        this.isLoggedIn.set(true);
+        localStorage.setItem('voziba_user_profile', JSON.stringify(updatedProfile));
+        localStorage.setItem('voziba_user_role', updatedProfile.role as string);
+        localStorage.setItem('voziba_is_logged_in', JSON.stringify(true));
+      },
+      error: (err) => console.error('Login failed via API', err)
+    });
+    
+    // Optimistic return
+    const updatedProfile = { ...this.profile(), email: params.email, name: params.name || params.email.split('@')[0], role: params.role };
+    this.profile.set(updatedProfile as any);
     this.userRole.set(params.role);
     this.isLoggedIn.set(true);
-
     localStorage.setItem('voziba_user_profile', JSON.stringify(updatedProfile));
     localStorage.setItem('voziba_user_role', params.role);
     localStorage.setItem('voziba_is_logged_in', JSON.stringify(true));

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Output, Input, inject } from '@angular/core';
 import { WorksService } from '../services/works.service';
 import { workType } from '../models/types';
 
@@ -13,9 +13,11 @@ export class BusinessesComponent {
 
   @Output() selectWorkToBook = new EventEmitter<workType>();
   @Output() selectWorkDetails = new EventEmitter<workType>();
+  @Input() limit?: number;
 
   get filteredWorks() {
-    return this.worksService.filteredWorks();
+    const works = this.worksService.filteredWorks();
+    return this.limit ? works.slice(0, this.limit) : works;
   }
 
   get selectedCategory() {

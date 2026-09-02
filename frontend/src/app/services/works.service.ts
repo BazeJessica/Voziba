@@ -1,4 +1,5 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { workType, categoryType, bookingType, testimonyType, businessProfileType } from '../models/types';
 
 @Injectable({
@@ -6,6 +7,7 @@ import { workType, categoryType, bookingType, testimonyType, businessProfileType
 })
 export class WorksService {
   private apiUrl = 'http://localhost:3001/api';
+  private http = inject(HttpClient);
   // Default craft categories list
   private readonly defaultCategories: categoryType[] = [
     {
@@ -81,36 +83,10 @@ export class WorksService {
   ];
 
   // Computed Categories Signal with Dynamic Item Counts
-  readonly categories = computed<categoryType[]>(() => {
-    const currentWorks = this.works();
-    const countsMap = new Map<string, number>();
+  private readonly categoriesSignal = signal<categoryType[]>(this.defaultCategories);
+  readonly categories = computed<categoryType[]>(() => this.categoriesSignal());
 
-    currentWorks.forEach(work => {
-      if (work.category) {
-        countsMap.set(work.category, (countsMap.get(work.category) || 0) + 1);
-      }
-    });
 
-    const result = this.defaultCategories.map(cat => ({
-      ...cat,
-      itemCount: countsMap.get(cat.name) || 0
-    }));
-
-    let nextId = 13;
-    countsMap.forEach((count, catName) => {
-      if (!result.some(c => c.name === catName)) {
-        result.push({
-          id: nextId++,
-          name: catName,
-          description: `Custom ${catName.toLowerCase()} and artisanal handiworks`,
-          icon: 'brush',
-          itemCount: count
-        });
-      }
-    });
-
-    return result;
-  });
 
   // Initial Sample Handiworks
   private initialWorks: workType[] = [
@@ -326,28 +302,81 @@ export class WorksService {
   }
 
   // Reactive state
-  readonly works = signal<workType[]>(this.loadInitialWorks());
+  readonly works = signal<workType[]>([]);
   readonly selectedCategory = signal<string>('All');
   readonly searchQuery = signal<string>('');
-  readonly bookings = signal<bookingType[]>(this.loadInitialBookings());
+  readonly bookings = signal<bookingType[]>([]);
 
   constructor() {
     this.fetchWorksFromBackend();
+    this.fetchBookingsFromBackend();
+    this.fetchCategoriesFromBackend();
+    this.fetchUsersFromBackend();
+  }
+
+  fetchBookingsFromBackend() {
+    this.http.get<bookingType[]>(`${this.apiUrl}/bookings`).subscribe({
+      next: (data) => {
+        if (Array.isArray(data)) {
+          this.bookings.set(data);
+          this.persistBookings(data);
+        }
+      },
+      error: (err) => console.warn('Failed to fetch bookings', err)
+    });
+  }
+
+  fetchCategoriesFromBackend() {
+    this.http.get<categoryType[]>(`${this.apiUrl}/categories`).subscribe({
+      next: (data) => {
+        if (Array.isArray(data)) {
+          // We can merge counts here or just use the backend data
+          const currentWorks = this.works();
+          const countsMap = new Map<string, number>();
+          currentWorks.forEach(work => {
+            if (work.category) countsMap.set(work.category, (countsMap.get(work.category) || 0) + 1);
+          });
+          const catsWithCounts = data.map(cat => ({ ...cat, itemCount: countsMap.get(cat.name) || 0 }));
+          this.categoriesSignal.set(catsWithCounts);
+        }
+      }
+    });
+  }
+
+  fetchUsersFromBackend() {
+    this.http.get<any[]>(`${this.apiUrl}/users`).subscribe({
+      next: (data) => {
+        if (Array.isArray(data)) {
+          const profiles: Record<string, businessProfileType> = {};
+          data.filter(u => u.role === 'business_owner').forEach(u => {
+            profiles[u.businessName || u.name] = {
+              name: u.businessName || u.name,
+              avatar: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=150&q=80',
+              category: u.category || 'Artisans',
+              location: 'Voziba Network',
+              bio: u.bio || '',
+              email: u.email,
+              phone: u.phone || '',
+              businessHours: 'Mon - Fri',
+              establishedYear: '2026'
+            };
+          });
+          this.businessProfiles.set(profiles);
+        }
+      }
+    });
   }
 
   fetchWorksFromBackend() {
-    if (typeof fetch !== 'undefined') {
-      fetch(`${this.apiUrl}/works`)
-        .then(res => res.json())
-        .then(data => {
-          if (Array.isArray(data) && data.length > 0) {
-            console.log('Successfully connected and synced with Next.js MongoDB backend works:', data.length);
-          }
-        })
-        .catch(err => {
-          console.warn('Next.js API offline, running with local signal state:', err.message);
-        });
-    }
+    this.http.get<workType[]>(`${this.apiUrl}/works`).subscribe({
+      next: (data) => {
+        if (Array.isArray(data)) {
+          this.works.set(data);
+          this.persistWorks(data);
+        }
+      },
+      error: (err) => console.warn('Next.js API offline, running with local signal state:', err)
+    });
   }
 
   // Filtered Works Computation
@@ -514,31 +543,39 @@ export class WorksService {
   }
 
   addWork(newWork: Omit<workType, 'id' | 'rating' | 'reviewsCount'>): workType {
-    const id = Date.now();
-    const created: workType = {
+    const created: any = {
       ...newWork,
-      id,
       rating: 5.0,
       reviewsCount: 1,
       featured: true
     };
-    const updated = [created, ...this.works()];
-    this.works.set(updated);
-    this.persistWorks(updated);
-    return created;
+    
+    this.http.post<workType>(`${this.apiUrl}/works`, created).subscribe({
+      next: (savedWork) => {
+        const updated = [savedWork, ...this.works()];
+        this.works.set(updated);
+        this.persistWorks(updated);
+      }
+    });
+
+    return created as workType;
   }
 
   createBooking(bookingData: Omit<bookingType, 'id' | 'createdAt' | 'status'>): bookingType {
-    const booking: bookingType = {
+    const booking: any = {
       ...bookingData,
-      id: 'BK-' + Math.random().toString(36).substring(2, 7).toUpperCase(),
-      status: 'pending',
-      createdAt: new Date().toISOString()
+      status: 'pending'
     };
-    const updated = [booking, ...this.bookings()];
-    this.bookings.set(updated);
-    this.persistBookings(updated);
-    return booking;
+    
+    this.http.post<bookingType>(`${this.apiUrl}/bookings`, booking).subscribe({
+      next: (savedBooking) => {
+        const updated = [savedBooking, ...this.bookings()];
+        this.bookings.set(updated);
+        this.persistBookings(updated);
+      }
+    });
+    
+    return booking as bookingType;
   }
 
   cancelBooking(bookingId: string) {
@@ -554,7 +591,7 @@ export class WorksService {
   }
 
   // Business Profiles State
-  readonly businessProfiles = signal<Record<string, businessProfileType>>(this.loadInitialProfiles());
+  readonly businessProfiles = signal<Record<string, businessProfileType>>({});
 
   private loadInitialProfiles(): Record<string, businessProfileType> {
     const saved = localStorage.getItem('voziba_business_profiles');

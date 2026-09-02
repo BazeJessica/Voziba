@@ -64,7 +64,6 @@
     <div class="section-container">
       <div class="section-header marketplace-header-flex">
         <div>
-          <span class="section-tag">MARKETPLACE</span>
           <h2 class="business-title">Available Handiworks & Custom Orders</h2>
           <p class="business-subtitle">Explore bespoke creations ready for immediate booking or custom orders</p>
         </div>
@@ -73,7 +72,7 @@
         </button>
       </div>
 
-      <app-businesses (selectWorkToBook)="openBooking($event)"
+      <app-businesses [limit]="6" (selectWorkToBook)="openBooking($event)"
         (selectWorkDetails)="openWorkDetails($event)"></app-businesses>
     </div>
   </section>
