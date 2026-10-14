@@ -7,7 +7,13 @@
     <div class="sidebar-biz-card">
       <div class="sidebar-avatar-wrapper" (click)="sidebarFileInput.click()"
         title="Click to upload business logo photo">
+        @if (activeBusinessDetails().avatar) {
         <img [src]="activeBusinessDetails().avatar" [alt]="activeBusinessDetails().name" class="biz-sidebar-avatar" />
+        } @else {
+        <div class="biz-sidebar-avatar avatar-placeholder-icon">
+          <mat-icon>person</mat-icon>
+        </div>
+        }
         <div class="avatar-hover-badge">
           <mat-icon>photo_camera</mat-icon>
         </div>
@@ -418,7 +424,13 @@
     <section class="stage-section profile-stage-card">
       <div class="profile-card-header">
         <div class="avatar-preview-wrapper">
+          @if (editProfileForm().avatar) {
           <img [src]="editProfileForm().avatar" [alt]="editProfileForm().name" class="avatar-lg" />
+          } @else {
+          <div class="avatar-lg avatar-placeholder-icon">
+            <mat-icon>person</mat-icon>
+          </div>
+          }
         </div>
         <div class="header-text">
           <h2>Edit Maker Identity & Business Profile</h2>
@@ -434,16 +446,29 @@
           <div class="avatar-upload-box">
             <div class="avatar-preview-circle" (click)="formFileInput.click()"
               title="Click to select custom image file">
+              @if (editProfileForm().avatar) {
               <img [src]="editProfileForm().avatar" [alt]="editProfileForm().name" class="form-avatar-img" />
+              } @else {
+              <div class="form-avatar-img avatar-placeholder-icon">
+                <mat-icon>person</mat-icon>
+              </div>
+              }
               <div class="preview-overlay">
                 <mat-icon>cloud_upload</mat-icon>
               </div>
             </div>
 
             <div class="upload-action-details">
-              <button type="button" class="btn-upload-file" (click)="formFileInput.click()">
-                <mat-icon>upload_file</mat-icon> Upload Photo of Your Choice
-              </button>
+              <div class="upload-buttons-row">
+                <button type="button" class="btn-upload-file" (click)="formFileInput.click()">
+                  <mat-icon>upload_file</mat-icon> Upload Photo of Your Choice
+                </button>
+                @if (editProfileForm().avatar) {
+                <button type="button" class="btn-clear-avatar" (click)="editProfileForm.update(f => ({ ...f, avatar: '' }))">
+                  <mat-icon>person</mat-icon> Use Default User Icon
+                </button>
+                }
+              </div>
               <input type="file" #formFileInput (change)="onFileUpload($event)" accept="image/*"
                 style="display: none" />
 

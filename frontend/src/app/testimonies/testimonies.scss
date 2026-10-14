@@ -72,14 +72,6 @@
     align-items: center;
     gap: 12px;
 
-    .customer-avatar {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid var(--color-primary-border);
-    }
-
     .customer-details {
       display: flex;
       flex-direction: column;

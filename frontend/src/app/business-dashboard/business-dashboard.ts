@@ -105,9 +105,12 @@ export class BusinessDashboardComponent implements OnInit {
       || creator === 'All Creators';
 
     const defaultAvatar = 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=150&q=80';
-    const avatar = isOwnerView && ownerProfile.avatar && ownerProfile.avatar !== defaultAvatar
+    let avatar = isOwnerView && ownerProfile.avatar
       ? ownerProfile.avatar
-      : (profile.avatar && profile.avatar !== defaultAvatar ? profile.avatar : ownerProfile.avatar || profile.avatar);
+      : (profile.avatar || ownerProfile.avatar || '');
+    if (avatar === defaultAvatar) {
+      avatar = '';
+    }
 
     return {
       ...profile,

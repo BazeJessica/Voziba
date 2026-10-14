@@ -40,7 +40,7 @@
 .about-hero {
   position: relative;
   background: var(--teal-950);
-  color: #ffffff;
+  color: var(--color-white);
   padding: 4.5rem 1.5rem 4rem 1.5rem;
   text-align: center;
   border-bottom: 1px solid var(--teal-800);
@@ -53,9 +53,9 @@
 
     .section-eyebrow {
       display: inline-block;
-      background: rgba(45, 212, 191, 0.12);
+      background: var(--teal-light-alpha-12);
       color: var(--teal-300);
-      border: 1px solid rgba(45, 212, 191, 0.25);
+      border: 1px solid var(--teal-light-alpha-25);
       font-size: 0.8rem;
       font-weight: 800;
       padding: 0.35rem 0.95rem;
@@ -70,7 +70,7 @@
       font-weight: 900;
       letter-spacing: -0.5px;
       margin: 0 0 1rem 0;
-      color: #ffffff;
+      color: var(--color-white);
     }
 
     p {
@@ -96,11 +96,11 @@
   }
 
   .stat-card {
-    background: #ffffff;
+    background: var(--color-white);
     border-radius: 18px;
     padding: 1.5rem;
     border: 1px solid var(--slate-200);
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 10px 25px -5px var(--black-alpha-05);
     display: flex;
     align-items: center;
     gap: 1.25rem;
@@ -146,18 +146,18 @@
   margin-bottom: 5rem;
 
   .mission-box {
-    background: #0f766e;
+    background: var(--teal-700);
     border-radius: 24px;
     padding: 3.5rem 2.5rem;
-    color: #ffffff;
+    color: var(--color-white);
     text-align: center;
-    box-shadow: 0 16px 32px -8px rgba(15, 118, 110, 0.25);
+    box-shadow: 0 16px 32px -8px var(--teal-dark-alpha-25);
 
     .mission-badge {
       display: inline-flex;
       align-items: center;
       gap: 0.4rem;
-      background: rgba(255, 255, 255, 0.15);
+      background: var(--white-alpha-15);
       padding: 0.4rem 1.1rem;
       border-radius: 20px;
       font-size: 0.85rem;
@@ -194,16 +194,16 @@
   }
 
   .value-card {
-    background: #ffffff;
+    background: var(--color-white);
     border-radius: 20px;
     padding: 2rem 1.5rem;
     border: 1px solid var(--slate-200);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 4px 6px -1px var(--black-alpha-03);
     transition: all 0.25s ease;
 
     &:hover {
       transform: translateY(-6px);
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 20px 25px -5px var(--black-alpha-08);
       border-color: var(--teal-500);
     }
 
@@ -249,7 +249,7 @@
   }
 
   .guarantee-card {
-    background: #ffffff;
+    background: var(--color-white);
     border-radius: 20px;
     padding: 2rem 1.75rem;
     border: 1px solid var(--slate-200);
@@ -262,8 +262,8 @@
       width: 60px;
       height: 60px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #0d9488, #0f766e);
-      color: #ffffff;
+      background: linear-gradient(135deg, var(--teal-600), var(--teal-700));
+      color: var(--color-white);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -302,27 +302,12 @@
   }
 
   .team-card {
-    background: #ffffff;
+    background: var(--color-white);
     border-radius: 20px;
     padding: 2rem 1.5rem;
     border: 1px solid var(--slate-200);
     text-align: center;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
-
-    .avatar-wrap {
-      width: 100px;
-      height: 100px;
-      margin: 0 auto 1.25rem auto;
-      border-radius: 50%;
-      overflow: hidden;
-      border: 3px solid var(--teal-500);
-
-      .team-avatar {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-    }
+    box-shadow: 0 4px 6px -1px var(--black-alpha-03);
 
     h3 {
       font-size: 1.3rem;
@@ -363,7 +348,7 @@
   }
 
   .faq-item {
-    background: #ffffff;
+    background: var(--color-white);
     border-radius: 16px;
     border: 1px solid var(--slate-200);
     padding: 1.25rem 1.5rem;
@@ -376,7 +361,7 @@
 
     &.open {
       border-color: var(--teal-600);
-      box-shadow: 0 4px 12px rgba(13, 148, 136, 0.1);
+      box-shadow: 0 4px 12px var(--teal-alpha-10);
 
       .faq-toggle-icon {
         transform: rotate(180deg);
@@ -426,7 +411,7 @@
     border-radius: 24px;
     padding: 3.5rem 2rem;
     text-align: center;
-    color: #ffffff;
+    color: var(--color-white);
 
     h2 {
       font-size: 2.2rem;
@@ -463,23 +448,23 @@
         }
 
         &.btn-cta-primary {
-          background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
-          color: #ffffff;
-          box-shadow: 0 6px 18px rgba(13, 148, 136, 0.35);
+          background: linear-gradient(135deg, var(--teal-600) 0%, var(--teal-700) 100%);
+          color: var(--color-white);
+          box-shadow: 0 6px 18px var(--teal-alpha-35);
 
           &:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 24px rgba(13, 148, 136, 0.45);
+            box-shadow: 0 10px 24px var(--teal-alpha-45);
           }
         }
 
         &.btn-cta-secondary {
-          background: rgba(255, 255, 255, 0.1);
-          color: #ffffff;
-          border: 1px solid rgba(255, 255, 255, 0.2);
+          background: var(--white-alpha-10);
+          color: var(--color-white);
+          border: 1px solid var(--white-alpha-20);
 
           &:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: var(--white-alpha-20);
           }
         }
       }

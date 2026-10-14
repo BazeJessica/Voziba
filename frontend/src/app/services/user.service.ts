@@ -1,5 +1,7 @@
 import { Injectable, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Observable, of, throwError } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 import { userProfileType } from '../models/types';
 
 const DEFAULT_PROFILE: userProfileType = {
@@ -10,20 +12,11 @@ const DEFAULT_PROFILE: userProfileType = {
   address: '742 Evergreen Terrace',
   city: 'San Francisco, CA',
   country: 'United States',
-  avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=250',
+  avatar: '',
   bio: 'Passionate about handcrafted walnut furniture, artisanal ceramics, and supporting independent master craftspeople.',
   joinedDate: 'January 2025',
   preferredCategories: ['Woodworking & Furniture', 'Pottery & Ceramics', 'Bespoke Tailoring']
 };
-
-export const AVATAR_PRESETS = [
-  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=250',
-  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=250',
-  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=250',
-  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=250',
-  'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=250',
-  'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=250'
-];
 
 export interface SignupParams {
   name: string;
@@ -70,7 +63,11 @@ export class UserService {
     const saved = localStorage.getItem('voziba_user_profile');
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        if (parsed.avatar === 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=250') {
+          parsed.avatar = '';
+        }
+        return parsed;
       } catch (e) {
         console.error('Failed to parse saved user profile', e);
       }
@@ -92,69 +89,147 @@ export class UserService {
     return updated;
   }
 
-  signup(params: SignupParams): { success: boolean; targetRoute: string } {
-    this.http.post<any>(`${this.apiUrl}/auth/signup`, params).subscribe({
-      next: (res) => {
-         console.log('Signup success', res);
-      }
-    });
+  signup(params: SignupParams): Observable<{ success: boolean; targetRoute: string; user?: any }> {
+    return this.http.post<any>(`${this.apiUrl}/auth/signup`, params).pipe(
+      map((res) => {
+        if (res.accessToken || res.token) {
+          this.saveTokens(res.accessToken || res.token, res.refreshToken);
+        }
+        const updatedProfile = {
+          ...this.profile(),
+          id: res.user?.id || `USR-${Math.floor(1000 + Math.random() * 9000)}`,
+          name: res.user?.name || params.name,
+          email: res.user?.email || params.email,
+          phone: res.user?.phone || params.phone || this.profile().phone || '',
+          role: res.user?.role || params.role,
+          bio: res.user?.bio || params.bio || (params.role === 'business_owner' ? `Master Artisan & Owner of ${params.businessName || 'Handcraft Studio'}` : this.profile().bio),
+          joinedDate: 'Just now'
+        };
+        this.profile.set(updatedProfile as any);
+        this.userRole.set(params.role);
+        this.isLoggedIn.set(true);
+        localStorage.setItem('voziba_user_profile', JSON.stringify(updatedProfile));
+        localStorage.setItem('voziba_user_role', params.role);
+        localStorage.setItem('voziba_is_logged_in', JSON.stringify(true));
 
-    const updatedProfile = {
-      ...this.profile(),
-      id: `USR-${Math.floor(1000 + Math.random() * 9000)}`,
-      name: params.name,
-      email: params.email,
-      phone: params.phone || this.profile().phone || '',
-      role: params.role,
-      bio: params.bio || (params.role === 'business_owner' ? `Master Artisan & Owner of ${params.businessName || 'Handcraft Studio'}` : this.profile().bio),
-      joinedDate: 'Just now'
-    };
-    this.profile.set(updatedProfile as any);
-    this.userRole.set(params.role);
-    this.isLoggedIn.set(true);
-    localStorage.setItem('voziba_user_profile', JSON.stringify(updatedProfile));
-    localStorage.setItem('voziba_user_role', params.role);
-    localStorage.setItem('voziba_is_logged_in', JSON.stringify(true));
-    
-    const targetRoute = params.role === 'consumer' ? '/profile' : '/business-dashboard';
-    return { success: true, targetRoute };
+        const targetRoute = res.targetRoute || (params.role === 'consumer' ? '/profile' : '/business-dashboard');
+        return { success: true, targetRoute, user: res.user };
+      }),
+      catchError((err) => {
+        if (err.status === 0) {
+          const updatedProfile = {
+            ...this.profile(),
+            id: `USR-${Math.floor(1000 + Math.random() * 9000)}`,
+            name: params.name,
+            email: params.email,
+            phone: params.phone || this.profile().phone || '',
+            role: params.role,
+            bio: params.bio || (params.role === 'business_owner' ? `Master Artisan & Owner of ${params.businessName || 'Handcraft Studio'}` : this.profile().bio),
+            joinedDate: 'Just now'
+          };
+          this.profile.set(updatedProfile as any);
+          this.userRole.set(params.role);
+          this.isLoggedIn.set(true);
+          localStorage.setItem('voziba_user_profile', JSON.stringify(updatedProfile));
+          localStorage.setItem('voziba_user_role', params.role);
+          localStorage.setItem('voziba_is_logged_in', JSON.stringify(true));
+          const targetRoute = params.role === 'consumer' ? '/profile' : '/business-dashboard';
+          return of({ success: true, targetRoute });
+        }
+        return throwError(() => err);
+      })
+    );
   }
 
-  loginWithRole(params: LoginParams): { success: boolean; targetRoute: string } {
-    this.http.post<any>(`${this.apiUrl}/auth/login`, { email: params.email, password: params.password, role: params.role }).subscribe({
-      next: (res) => {
+  loginWithRole(params: LoginParams): Observable<{ success: boolean; targetRoute: string; user?: any }> {
+    return this.http.post<any>(`${this.apiUrl}/auth/login`, {
+      email: params.email,
+      password: params.password,
+      role: params.role
+    }).pipe(
+      map((res) => {
+        if (res.accessToken || res.token) {
+          this.saveTokens(res.accessToken || res.token, res.refreshToken);
+        }
         const updatedProfile = {
           ...this.profile(),
           email: res.user?.email || params.email,
           name: res.user?.name || params.name || params.email.split('@')[0],
-          role: res.user?.role || params.role
+          role: res.user?.role || params.role,
+          phone: res.user?.phone || this.profile().phone,
+          bio: res.user?.bio || this.profile().bio,
+          businessName: res.user?.businessName || this.profile().businessName,
         };
-        this.profile.set(updatedProfile);
+        this.profile.set(updatedProfile as any);
         this.userRole.set(updatedProfile.role as any);
         this.isLoggedIn.set(true);
         localStorage.setItem('voziba_user_profile', JSON.stringify(updatedProfile));
         localStorage.setItem('voziba_user_role', updatedProfile.role as string);
         localStorage.setItem('voziba_is_logged_in', JSON.stringify(true));
-      },
-      error: (err) => console.error('Login failed via API', err)
-    });
-    
-    // Optimistic return
-    const updatedProfile = { ...this.profile(), email: params.email, name: params.name || params.email.split('@')[0], role: params.role };
-    this.profile.set(updatedProfile as any);
-    this.userRole.set(params.role);
-    this.isLoggedIn.set(true);
-    localStorage.setItem('voziba_user_profile', JSON.stringify(updatedProfile));
-    localStorage.setItem('voziba_user_role', params.role);
-    localStorage.setItem('voziba_is_logged_in', JSON.stringify(true));
 
-    const targetRoute = params.role === 'consumer' ? '/profile' : '/business-dashboard';
-    return { success: true, targetRoute };
+        const targetRoute = res.targetRoute || (updatedProfile.role === 'business_owner' ? '/business-dashboard' : '/profile');
+        return { success: true, targetRoute, user: res.user };
+      }),
+      catchError((err) => {
+        if (err.status === 0) {
+          const updatedProfile = {
+            ...this.profile(),
+            email: params.email,
+            name: params.name || params.email.split('@')[0],
+            role: params.role
+          };
+          this.profile.set(updatedProfile as any);
+          this.userRole.set(params.role);
+          this.isLoggedIn.set(true);
+          localStorage.setItem('voziba_user_profile', JSON.stringify(updatedProfile));
+          localStorage.setItem('voziba_user_role', params.role);
+          localStorage.setItem('voziba_is_logged_in', JSON.stringify(true));
+          const targetRoute = params.role === 'consumer' ? '/profile' : '/business-dashboard';
+          return of({ success: true, targetRoute });
+        }
+        return throwError(() => err);
+      })
+    );
+  }
+
+  getAccessToken(): string | null {
+    return localStorage.getItem('voziba_access_token') || localStorage.getItem('voziba_jwt_token');
+  }
+
+  getRefreshToken(): string | null {
+    return localStorage.getItem('voziba_refresh_token');
+  }
+
+  saveTokens(accessToken: string, refreshToken?: string): void {
+    localStorage.setItem('voziba_access_token', accessToken);
+    localStorage.setItem('voziba_jwt_token', accessToken);
+    if (refreshToken) {
+      localStorage.setItem('voziba_refresh_token', refreshToken);
+    }
+  }
+
+  getToken(): string | null {
+    return this.getAccessToken();
+  }
+
+  refreshTokenApi() {
+    const refreshToken = this.getRefreshToken();
+    if (!refreshToken) {
+      return this.http.post<any>(`${this.apiUrl}/auth/refresh`, {});
+    }
+    return this.http.post<any>(`${this.apiUrl}/auth/refresh`, { refreshToken });
+  }
+
+  resetPassword(email: string, newPassword: string) {
+    return this.http.post<any>(`${this.apiUrl}/auth/reset-password`, { email, newPassword });
   }
 
   logout() {
     this.isLoggedIn.set(false);
     localStorage.setItem('voziba_is_logged_in', JSON.stringify(false));
+    localStorage.removeItem('voziba_access_token');
+    localStorage.removeItem('voziba_refresh_token');
+    localStorage.removeItem('voziba_jwt_token');
   }
 
   login() {
@@ -167,6 +242,10 @@ export class UserService {
     this.userRole.set('consumer');
     localStorage.setItem('voziba_user_profile', JSON.stringify(DEFAULT_PROFILE));
     localStorage.setItem('voziba_user_role', 'consumer');
+    localStorage.removeItem('voziba_access_token');
+    localStorage.removeItem('voziba_refresh_token');
+    localStorage.removeItem('voziba_jwt_token');
     return DEFAULT_PROFILE;
   }
 }
+

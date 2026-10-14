@@ -1,0 +1,55 @@
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: voziba_mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: voziba
+    volumes:
+      - mongodb_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Next.js API Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: voziba_backend
+    restart: always
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      MONGODB_URI: mongodb://mongodb:27017/voziba
+      JWT_SECRET: voziba_super_secret_jwt_key_2026
+      JWT_EXPIRES_IN: 7d
+      NEXT_PUBLIC_API_URL: http://localhost:3001/api
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+  # Angular Web Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: voziba_frontend
+    restart: always
+    ports:
+      - "4200:4200"
+    environment:
+      VOZIBA_API_URL: http://backend:3001/api
+    depends_on:
+      - backend
+
+volumes:
+  mongodb_data:
+    driver: local

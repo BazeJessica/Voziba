@@ -14,7 +14,7 @@
 .contact-hero {
   position: relative;
   background: var(--teal-950);
-  color: #ffffff;
+  color: var(--color-white);
   padding: 4.5rem 1.5rem 4rem 1.5rem;
   text-align: center;
   border-bottom: 1px solid var(--teal-800);
@@ -27,9 +27,9 @@
 
     .eyebrow {
       display: inline-block;
-      background: rgba(45, 212, 191, 0.12);
+      background: var(--teal-light-alpha-12);
       color: var(--teal-300);
-      border: 1px solid rgba(45, 212, 191, 0.25);
+      border: 1px solid var(--teal-light-alpha-25);
       font-size: 0.8rem;
       font-weight: 800;
       padding: 0.35rem 0.95rem;
@@ -44,7 +44,7 @@
       font-weight: 900;
       letter-spacing: -0.5px;
       margin: 0 0 1rem 0;
-      color: #ffffff;
+      color: var(--color-white);
     }
 
     p {
@@ -70,16 +70,16 @@
   }
 
   .dept-card {
-    background: #ffffff;
+    background: var(--color-white);
     border-radius: 20px;
     padding: 1.75rem 1.5rem;
     border: 1px solid var(--slate-200);
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 10px 25px -5px var(--black-alpha-05);
     transition: all 0.25s ease;
 
     &:hover {
       transform: translateY(-4px);
-      box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 20px 30px -10px var(--black-alpha-08);
       border-color: var(--teal-500);
     }
 
@@ -151,7 +151,7 @@
 }
 
 .contact-channels {
-  background: #ffffff;
+  background: var(--color-white);
   border-radius: 20px;
   border: 1px solid var(--slate-200);
   padding: 2rem;
@@ -286,11 +286,11 @@
 }
 
 .contact-form-wrap {
-  background: #ffffff;
+  background: var(--color-white);
   border-radius: 20px;
   border: 1px solid var(--slate-200);
   padding: 2.5rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 4px 6px -1px var(--black-alpha-03);
 
   .contact-form {
     h2 {
@@ -340,8 +340,8 @@
 
         &:focus {
           border-color: var(--teal-600);
-          background: #ffffff;
-          box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+          background: var(--color-white);
+          box-shadow: 0 0 0 3px var(--teal-alpha-15);
         }
       }
 
@@ -358,17 +358,17 @@
       padding: 0.85rem 2rem;
       border-radius: 12px;
       border: none;
-      background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
-      color: #ffffff;
+      background: linear-gradient(135deg, var(--teal-600) 0%, var(--teal-700) 100%);
+      color: var(--color-white);
       font-size: 1rem;
       font-weight: 800;
       cursor: pointer;
-      box-shadow: 0 6px 18px rgba(13, 148, 136, 0.35);
+      box-shadow: 0 6px 18px var(--teal-alpha-35);
       transition: all 0.25s ease;
 
       &:hover {
         transform: translateY(-2px);
-        box-shadow: 0 10px 24px rgba(13, 148, 136, 0.45);
+        box-shadow: 0 10px 24px var(--teal-alpha-45);
       }
 
       &.loading {
@@ -420,7 +420,7 @@
 
     .btn-reset {
       background: var(--teal-600);
-      color: #ffffff;
+      color: var(--color-white);
       padding: 0.75rem 1.6rem;
       border-radius: 12px;
       border: none;

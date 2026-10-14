@@ -58,38 +58,44 @@ export class SignupComponent {
 
     this.isLoading = true;
 
-    setTimeout(() => {
-      const res = this.userService.signup({
-        name: this.name.trim(),
-        email: this.email.trim(),
-        role: this.role,
-        phone: this.phone.trim(),
-        businessName: bName
-      });
+    this.userService.signup({
+      name: this.name.trim(),
+      email: this.email.trim(),
+      password: this.password,
+      role: this.role,
+      phone: this.phone.trim(),
+      businessName: bName
+    }).subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        if (this.role === 'business_owner') {
+          this.worksService.updateBusinessProfile(bName, {
+            name: bName,
+            avatar: '',
+            category: this.category,
+            location: 'San Francisco, CA',
+            bio: `Specialized studio for ${this.category.toLowerCase()} handiworks, bespoke creations, and artisan designs.`,
+            email: this.email,
+            phone: this.phone || '+1 (555) 019-2831',
+            businessHours: 'Mon - Fri: 9:00 AM - 6:00 PM',
+            establishedYear: '2025'
+          });
 
-      if (this.role === 'business_owner') {
-        this.worksService.updateBusinessProfile(bName, {
-          name: bName,
-          avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
-          category: this.category,
-          location: 'San Francisco, CA',
-          bio: `Specialized studio for ${this.category.toLowerCase()} handiworks, bespoke creations, and artisan designs.`,
-          email: this.email,
-          phone: this.phone || '+1 (555) 019-2831',
-          businessHours: 'Mon - Fri: 9:00 AM - 6:00 PM',
-          establishedYear: '2025'
-        });
-
-        this.successMessage = `🎉 Business Account created for ${bName}! Redirecting to Business Dashboard...`;
-        setTimeout(() => {
-          this.router.navigate(['/business-dashboard', encodeURIComponent(bName)]);
-        }, 1200);
-      } else {
-        this.successMessage = `🎉 Account created successfully! Redirecting to your Consumer Profile...`;
-        setTimeout(() => {
-          this.router.navigate(['/profile']);
-        }, 1200);
+          this.successMessage = `🎉 Business Account created for ${bName}! Redirecting to Business Dashboard...`;
+          setTimeout(() => {
+            this.router.navigate(['/business-dashboard', encodeURIComponent(bName)]);
+          }, 1200);
+        } else {
+          this.successMessage = `🎉 Account created successfully! Redirecting to your Consumer Profile...`;
+          setTimeout(() => {
+            this.router.navigate(['/profile']);
+          }, 1200);
+        }
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.errorMessage = err.error?.error || 'Account creation failed. Please check your details and try again.';
       }
-    }, 500);
+    });
   }
 }

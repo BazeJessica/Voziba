@@ -1,59 +1,102 @@
-# Voziba
+# Voziba Workspace
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.14.
+Voziba is an artisanal handiwork marketplace platform. The project is cleanly separated into two distinct sub-systems with full Docker containerization support and GitHub Actions CI pipelines:
 
-## Development server
-
-To start a local development server, run:
-
-```bash
-ng serve
+```
+Voziba Workspace
+├── .github/workflows/ci.yml  # GitHub Actions CI pipeline (Linting, Testing, Building, Docker validation)
+├── docker-compose.yml        # Docker Compose configuration for full-stack orchestration
+├── frontend/                 # Angular frontend application (UI, components, styles, routes, Nginx)
+└── backend/                  # Next.js API server & MongoDB database integration
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+---
 
-## Code scaffolding
+## 🚀 Dummy Seed Data & Latency Benchmark APIs
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+The backend provides built-in endpoints for seeding rich dummy data and testing application response latency:
+
+### 1. Seed Relational Dummy Dataset
+- **URL**: `GET /api/seed` or `POST /api/seed`
+- **Description**: Populates MongoDB with relational ObjectIDs across Categories, Users (Consumers & Business Owners), Handiwork listings, and Active Bookings.
+- **Curl Command**:
+  ```bash
+  curl -X GET http://localhost:3001/api/seed
+  ```
+
+### 2. Latency & Performance Benchmark Diagnostic
+- **URL**: `GET /api/benchmark`
+- **Description**: Measures MongoDB connection ping time (`dbPingMs`), query execution latency (`worksQueryMs`, `categoriesQueryMs`, `bookingsQueryMs`), total server processing time (`totalServerLatencyMs`), and memory usage.
+- **Curl Command**:
+  ```bash
+  curl -X GET http://localhost:3001/api/benchmark
+  ```
+
+---
+
+## 🤖 GitHub Actions CI Pipeline
+
+The project includes an automated GitHub Actions CI workflow (`.github/workflows/ci.yml`) triggered on pushes and pull requests to `main`, `master`, and `develop` branches:
+
+1. **`backend-ci`**: Installs dependencies, runs ESLint checks, runs Jest unit tests, and builds Next.js.
+2. **`frontend-ci`**: Installs dependencies, runs ESLint checks, and builds the Angular application.
+3. **`docker-ci`**: Validates `docker-compose.yml` configuration and tests Docker image builds for frontend and backend.
+
+---
+
+## 🐳 Running with Docker (Recommended)
+
+To spin up the entire Voziba platform (MongoDB + Next.js API + Angular Web App) using Docker Compose:
 
 ```bash
-ng generate component component-name
+# Build and start all services in the background
+docker compose up -d --build
+
+# View logs from all running containers
+docker compose logs -f
+
+# Stop all container services
+docker compose down
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+### Services & Exposed Ports:
+- **Frontend App (Angular + Nginx)**: [http://localhost:4200](http://localhost:4200)
+- **Backend API (Next.js)**: [http://localhost:3001](http://localhost:3001)
+- **Database (MongoDB)**: `localhost:27017`
 
+---
+
+## 🎨 Frontend (Angular App)
+
+Located in `frontend/`:
+
+- **Framework**: Angular v21 (NgModule architecture)
+- **Styling**: Vanilla SCSS, CSS Variables, Angular Material
+- **Features**: Role-based Consumer Profile vs Business Owner Dashboard, Handiwork listings, Booking modals, Admin Portal.
+
+### Development & Lint Commands:
 ```bash
-ng generate --help
+cd frontend
+npm start        # Start local dev server (http://localhost:4200/)
+npm run lint     # Run ESLint checks across TypeScript components
+npm run build    # Build production bundle
 ```
 
-## Building
+---
 
-To build the project run:
+## ⚙️ Backend (Next.js & MongoDB API)
 
+Located in `backend/`:
+
+- **Framework**: Next.js (App Router)
+- **Database**: MongoDB (Mongoose driver)
+- **Features**: User authentication APIs, Handiwork listings API, Custom order bookings API, Craft categories API, Latency benchmark API, Swagger API docs.
+
+### Development & Lint Commands:
 ```bash
-ng build
+cd backend
+npm run dev      # Start local dev server (http://localhost:3001/)
+npm run lint     # Run ESLint checks across API routes and models
+npm test         # Run Jest tests
+npm run build    # Build Next.js app
 ```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.

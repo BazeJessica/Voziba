@@ -25,7 +25,6 @@
 
     <div class="card-content">
       <div class="creator-header" (click)="$event.stopPropagation()">
-        <img [src]="work.creatorAvatar" [alt]="work.creatorName" class="creator-avatar" />
         <div class="creator-info">
           <span class="creator-name">{{ work.creatorName }}</span>
           <span class="creator-location"><mat-icon class="location-icon">location_on</mat-icon> {{ work.location }}</span>

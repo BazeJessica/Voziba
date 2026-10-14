@@ -1,11 +1,16 @@
 <div class="profile-page-container">
-  <!-- Profile Header Hero -->
   <div class="profile-header-card">
     <div class="profile-banner"></div>
 
     <div class="profile-header-main">
       <div class="avatar-container">
+        @if (user().avatar) {
         <img [src]="user().avatar" [alt]="user().name" class="profile-avatar" />
+        } @else {
+        <div class="profile-avatar avatar-placeholder-icon">
+          <mat-icon>person</mat-icon>
+        </div>
+        }
         <span class="consumer-badge" title="Verified Consumer">Consumer</span>
       </div>
 
@@ -154,40 +159,49 @@
     <div class="details-card-wrapper edit-mode-active">
       <div class="details-section-header">
         <h2>Edit Consumer Profile</h2>
-        <div class="header-actions-sm">
-          <button class="btn-save-profile" (click)="saveProfile()">
-            <mat-icon>check</mat-icon> Save Changes
-          </button>
-          <button class="btn-cancel-edit" (click)="cancelEditing()">
-            <mat-icon>close</mat-icon> Cancel
-          </button>
-        </div>
+        
       </div>
 
       <form (ngSubmit)="saveProfile()" class="edit-form">
-        <!-- Avatar Change Section -->
-        <div class="avatar-edit-section">
-          <div class="avatar-preview">
-            <img [src]="editForm.avatar" [alt]="editForm.name" />
+        <!-- Profile Picture Update Section -->
+        <div class="profile-image-edit-section">
+          <div class="image-preview-wrapper" (click)="avatarFileInput.click()" title="Click to upload new image">
+            @if (editForm.avatar) {
+            <img [src]="editForm.avatar" [alt]="editForm.name" class="image-preview" />
+            } @else {
+            <div class="image-preview avatar-placeholder-icon">
+              <mat-icon>person</mat-icon>
+            </div>
+            }
+            <div class="preview-overlay">
+              <mat-icon>photo_camera</mat-icon>
+            </div>
           </div>
-          <div class="avatar-controls">
-            <label class="form-label">Profile Avatar</label>
-            <input type="text" class="form-input" [(ngModel)]="editForm.avatar" name="avatarUrl"
-              placeholder="Paste Image URL" />
-            <button type="button" class="btn-preset-avatar" (click)="showAvatarPicker = !showAvatarPicker">
-              <mat-icon>photo_library</mat-icon> Pick from Sample Avatars
-            </button>
-          </div>
-        </div>
 
-        @if (showAvatarPicker) {
-        <div class="avatar-picker-grid">
-          @for (preset of avatarPresets; track preset) {
-          <img [src]="preset" [class.selected]="editForm.avatar === preset" (click)="selectAvatarPreset(preset)"
-            alt="Preset avatar" />
-          }
+          <div class="image-edit-controls">
+            <label class="form-label">Profile Photo</label>
+            <p class="image-edit-hint">Upload a custom profile image or paste an image URL below.</p>
+
+            <input #avatarFileInput type="file" accept="image/*" (change)="onAvatarFileSelected($event)" style="display: none" />
+
+            <div class="image-action-buttons">
+              <button type="button" class="btn-upload-photo" (click)="avatarFileInput.click()">
+                <mat-icon>upload</mat-icon> Upload Image
+              </button>
+
+              @if (editForm.avatar) {
+              <button type="button" class="btn-clear-photo" (click)="clearAvatar()">
+                <mat-icon>delete_outline</mat-icon> Remove Photo
+              </button>
+              }
+            </div>
+
+            <div class="url-input-container">
+              <input type="text" class="form-input" [(ngModel)]="editForm.avatar" name="avatarUrl"
+                placeholder="Or paste an image URL (https://...)" />
+            </div>
+          </div>
         </div>
-        }
 
         <div class="form-grid">
           <div class="form-group">
@@ -240,12 +254,6 @@
           </div>
         </div>
 
-        <div class="form-actions-bottom">
-          <button type="button" class="btn-cancel-edit" (click)="cancelEditing()">Cancel</button>
-          <button type="submit" class="btn-save-profile">
-            <mat-icon>check</mat-icon> Save Changes
-          </button>
-        </div>
       </form>
     </div>
     }
@@ -312,11 +320,40 @@
 
         <!-- Card Core Content -->
         <div class="card-body">
-          <div class="work-info">
-            <h3 class="work-title">{{ booking.workTitle }}</h3>
-            <p class="creator-name">
-              <mat-icon>storefront</mat-icon> Maker: <strong>{{ booking.creatorName }}</strong>
-            </p>
+          <div class="work-header-row">
+            <div class="work-info">
+              <h3 class="work-title">{{ booking.workTitle }}</h3>
+              <p class="creator-name">
+                <mat-icon>storefront</mat-icon> Maker: <strong>{{ booking.creatorName }}</strong>
+              </p>
+            </div>
+
+            <!-- Hamburger dotted action menu right-aligned to handiwork name -->
+            <div class="booking-actions-menu">
+              <button type="button" class="btn-more-actions" (click)="toggleBookingMenu(booking.id, $event)"
+                title="Booking actions">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+
+              @if (activeMenuBookingId() === booking.id) {
+              <div class="booking-dropdown-menu" (click)="$event.stopPropagation()">
+                <button type="button" class="dropdown-item" (click)="viewWork(booking.workId); closeBookingMenu()">
+                  <mat-icon>visibility</mat-icon> <span>View Handiwork</span>
+                </button>
+
+                @if (booking.status === 'pending' || booking.status === 'confirmed') {
+                <button type="button" class="dropdown-item item-cancel" (click)="cancelBooking(booking.id); closeBookingMenu()">
+                  <mat-icon>cancel</mat-icon> <span>Cancel Booking</span>
+                </button>
+                }
+
+                <a [href]="'mailto:' + booking.customerEmail + '?subject=Query regarding booking ' + booking.id"
+                   class="dropdown-item" (click)="closeBookingMenu()">
+                  <mat-icon>mail_outline</mat-icon> <span>Contact Maker</span>
+                </a>
+              </div>
+              }
+            </div>
           </div>
 
           <div class="booking-meta-grid">
@@ -337,13 +374,6 @@
               <span class="meta-value">{{ booking.customerName }}</span>
             </div>
           </div>
-
-          @if (booking.customNotes) {
-          <div class="custom-notes-box">
-            <span class="notes-title"><mat-icon>description</mat-icon> Your Specifications & Notes:</span>
-            <p class="notes-text">"{{ booking.customNotes }}"</p>
-          </div>
-          }
 
           <!-- Status Timeline Visualization -->
           <div class="status-timeline">
@@ -366,23 +396,6 @@
               <span class="step-label">Completed & Delivered</span>
             </div>
           </div>
-        </div>
-
-        <!-- Card Footer Actions -->
-        <div class="card-footer">
-          <button class="btn-view-work" (click)="viewWork(booking.workId)">
-            <mat-icon>visibility</mat-icon> View Handiwork
-          </button>
-
-          @if (booking.status === 'pending' || booking.status === 'confirmed') {
-          <button class="btn-cancel-booking" (click)="cancelBooking(booking.id)">
-            <mat-icon>cancel</mat-icon> Cancel Booking
-          </button>
-          }
-
-          <a [href]="'mailto:' + booking.customerEmail + '?subject=Query regarding booking ' + booking.id" class="btn-contact-maker">
-            <mat-icon>mail_outline</mat-icon> Contact Maker
-          </a>
         </div>
       </div>
       } @empty {

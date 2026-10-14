@@ -1,6 +1,7 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { workType, categoryType, bookingType, testimonyType, businessProfileType } from '../models/types';
+import { CacheService } from './cache.service';
 
 @Injectable({
   providedIn: 'root'
@@ -8,6 +9,7 @@ import { workType, categoryType, bookingType, testimonyType, businessProfileType
 export class WorksService {
   private apiUrl = 'http://localhost:3001/api';
   private http = inject(HttpClient);
+  private cacheService = inject(CacheService);
   // Default craft categories list
   private readonly defaultCategories: categoryType[] = [
     {
@@ -81,9 +83,22 @@ export class WorksService {
       itemCount: 0
     }
   ];
+  private loadInitialCategories(): categoryType[] {
+    if (typeof localStorage !== 'undefined') {
+      const saved = localStorage.getItem('voziba_categories');
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch (e) {
+          console.warn('Failed to parse cached categories', e);
+        }
+      }
+    }
+    return this.defaultCategories;
+  }
 
   // Computed Categories Signal with Dynamic Item Counts
-  private readonly categoriesSignal = signal<categoryType[]>(this.defaultCategories);
+  private readonly categoriesSignal = signal<categoryType[]>(this.loadInitialCategories());
   readonly categories = computed<categoryType[]>(() => this.categoriesSignal());
 
 
@@ -302,10 +317,10 @@ export class WorksService {
   }
 
   // Reactive state
-  readonly works = signal<workType[]>([]);
+  readonly works = signal<workType[]>(this.loadInitialWorks());
   readonly selectedCategory = signal<string>('All');
   readonly searchQuery = signal<string>('');
-  readonly bookings = signal<bookingType[]>([]);
+  readonly bookings = signal<bookingType[]>(this.loadInitialBookings());
 
   constructor() {
     this.fetchWorksFromBackend();
@@ -317,7 +332,7 @@ export class WorksService {
   fetchBookingsFromBackend() {
     this.http.get<bookingType[]>(`${this.apiUrl}/bookings`).subscribe({
       next: (data) => {
-        if (Array.isArray(data)) {
+        if (Array.isArray(data) && data.length > 0) {
           this.bookings.set(data);
           this.persistBookings(data);
         }
@@ -326,11 +341,11 @@ export class WorksService {
     });
   }
 
-  fetchCategoriesFromBackend() {
-    this.http.get<categoryType[]>(`${this.apiUrl}/categories`).subscribe({
+  fetchCategoriesFromBackend(forceRefresh: boolean = false) {
+    const headers = forceRefresh ? { 'x-refresh': 'true' } : undefined;
+    this.http.get<categoryType[]>(`${this.apiUrl}/categories`, { headers }).subscribe({
       next: (data) => {
-        if (Array.isArray(data)) {
-          // We can merge counts here or just use the backend data
+        if (Array.isArray(data) && data.length > 0) {
           const currentWorks = this.works();
           const countsMap = new Map<string, number>();
           currentWorks.forEach(work => {
@@ -338,20 +353,24 @@ export class WorksService {
           });
           const catsWithCounts = data.map(cat => ({ ...cat, itemCount: countsMap.get(cat.name) || 0 }));
           this.categoriesSignal.set(catsWithCounts);
+          if (typeof localStorage !== 'undefined') {
+            localStorage.setItem('voziba_categories', JSON.stringify(catsWithCounts));
+          }
         }
-      }
+      },
+      error: (err) => console.warn('Categories API offline, using local state:', err)
     });
   }
 
   fetchUsersFromBackend() {
     this.http.get<any[]>(`${this.apiUrl}/users`).subscribe({
       next: (data) => {
-        if (Array.isArray(data)) {
-          const profiles: Record<string, businessProfileType> = {};
+        if (Array.isArray(data) && data.length > 0) {
+          const profiles: Record<string, businessProfileType> = { ...this.businessProfiles() };
           data.filter(u => u.role === 'business_owner').forEach(u => {
             profiles[u.businessName || u.name] = {
               name: u.businessName || u.name,
-              avatar: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=150&q=80',
+              avatar: u.avatar || '',
               category: u.category || 'Artisans',
               location: 'Voziba Network',
               bio: u.bio || '',
@@ -363,14 +382,16 @@ export class WorksService {
           });
           this.businessProfiles.set(profiles);
         }
-      }
+      },
+      error: (err) => console.warn('Users API offline, using local state:', err)
     });
   }
 
-  fetchWorksFromBackend() {
-    this.http.get<workType[]>(`${this.apiUrl}/works`).subscribe({
+  fetchWorksFromBackend(forceRefresh: boolean = false) {
+    const headers = forceRefresh ? { 'x-refresh': 'true' } : undefined;
+    this.http.get<workType[]>(`${this.apiUrl}/works`, { headers }).subscribe({
       next: (data) => {
-        if (Array.isArray(data)) {
+        if (Array.isArray(data) && data.length > 0) {
           this.works.set(data);
           this.persistWorks(data);
         }
@@ -591,7 +612,7 @@ export class WorksService {
   }
 
   // Business Profiles State
-  readonly businessProfiles = signal<Record<string, businessProfileType>>({});
+  readonly businessProfiles = signal<Record<string, businessProfileType>>(this.loadInitialProfiles());
 
   private loadInitialProfiles(): Record<string, businessProfileType> {
     const saved = localStorage.getItem('voziba_business_profiles');
@@ -658,7 +679,7 @@ export class WorksService {
     // Fallback default
     return {
       name: creatorName,
-      avatar: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=150&q=80',
+      avatar: '',
       category: 'Artisans & Craftsmen',
       location: 'Voziba Marketplace Network',
       bio: 'Professional artisan craftsman on Voziba marketplace offering custom handiworks and bespoke items.',
@@ -716,6 +737,7 @@ export class WorksService {
     const updated = this.works().filter(w => w.id != id && !(w._id && w._id === id));
     this.works.set(updated);
     this.persistWorks(updated);
+    this.cacheService.invalidate('/api/works');
   }
 
   updateWork(id: number | string, changes: Partial<workType>) {
@@ -727,5 +749,6 @@ export class WorksService {
     });
     this.works.set(updated);
     this.persistWorks(updated);
+    this.cacheService.invalidate('/api/works');
   }
 }

@@ -104,12 +104,12 @@
       color: white;
       background: var(--color-primary);
       border: 1.5px solid var(--color-primary);
-      box-shadow: 0 2px 8px rgba(13, 148, 136, 0.25);
+      box-shadow: 0 2px 8px var(--teal-alpha-25);
 
       &:hover, &.auth-active {
         background: var(--color-primary-hover);
         border-color: var(--color-primary-hover);
-        box-shadow: 0 4px 12px rgba(13, 148, 136, 0.35);
+        box-shadow: 0 4px 12px var(--teal-alpha-35);
       }
     }
   }
@@ -120,10 +120,10 @@
     gap: 6px;
     padding: 7px 14px;
     border-radius: 20px;
-    background: #e0f2fe;
-    border: 1px solid #38bdf8;
+    background: var(--sky-100);
+    border: 1px solid var(--sky-400);
     text-decoration: none;
-    color: #0369a1;
+    color: var(--sky-700);
     font-weight: 700;
     font-size: 13.5px;
     transition: all 0.2s ease;
@@ -132,16 +132,16 @@
       font-size: 17px;
       width: 17px;
       height: 17px;
-      color: #0284c7;
+      color: var(--sky-600);
     }
 
     &:hover, &.admin-active {
-      background: #0284c7;
-      color: #ffffff;
-      border-color: #0369a1;
+      background: var(--sky-600);
+      color: var(--color-white);
+      border-color: var(--sky-700);
 
       mat-icon {
-        color: #ffffff;
+        color: var(--color-white);
       }
     }
   }
@@ -152,7 +152,7 @@
     gap: 6px;
     padding: 7px 14px;
     border-radius: 20px;
-    background: #fef3c7;
+    background: var(--amber-100);
     border: 1px solid var(--amber-400);
     text-decoration: none;
     color: var(--amber-700);
@@ -169,11 +169,11 @@
 
     &:hover, &.biz-active {
       background: var(--amber-500);
-      color: #ffffff;
+      color: var(--color-white);
       border-color: var(--amber-600);
 
       mat-icon {
-        color: #ffffff;
+        color: var(--color-white);
       }
     }
   }
@@ -202,11 +202,11 @@
 
     &:hover, &.profile-active {
       background: var(--color-primary);
-      color: #ffffff;
+      color: var(--color-white);
       border-color: var(--color-primary-dark);
 
       .nav-avatar {
-        border-color: #ffffff;
+        border-color: var(--color-white);
       }
     }
   }
@@ -231,9 +231,9 @@
     }
 
     &:hover {
-      background: #fef2f2;
-      border-color: #fecaca;
-      color: #dc2626;
+      background: var(--red-50);
+      border-color: var(--red-200);
+      color: var(--red-600);
     }
   }
 

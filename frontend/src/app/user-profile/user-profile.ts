@@ -1,5 +1,5 @@
-import { Component, inject, signal, computed } from '@angular/core';
-import { UserService, AVATAR_PRESETS } from '../services/user.service';
+import { Component, inject, signal, computed, HostListener } from '@angular/core';
+import { UserService } from '../services/user.service';
 import { WorksService } from '../services/works.service';
 import { bookingType, workType, userProfileType } from '../models/types';
 
@@ -28,9 +28,24 @@ export class UserProfileComponent {
   bookingSearchQuery = signal<string>('');
 
   isEditing = false;
-  showAvatarPicker = false;
   saveSuccessMessage = '';
-  avatarPresets = AVATAR_PRESETS;
+
+  // Active dropdown action menu for a specific booking
+  activeMenuBookingId = signal<number | string | null>(null);
+
+  toggleBookingMenu(bookingId: number | string, event: Event) {
+    event.stopPropagation();
+    this.activeMenuBookingId.update(id => (id === bookingId ? null : bookingId));
+  }
+
+  closeBookingMenu() {
+    this.activeMenuBookingId.set(null);
+  }
+
+  @HostListener('document:click')
+  onDocumentClick() {
+    this.activeMenuBookingId.set(null);
+  }
 
   // Selected work for modal popup if consumer clicks "View Work" on a booking
   selectedWorkForDetails: workType | null = null;
@@ -111,7 +126,6 @@ export class UserProfileComponent {
 
   cancelEditing() {
     this.isEditing = false;
-    this.showAvatarPicker = false;
   }
 
   toggleCategoryPreference(categoryName: string) {
@@ -127,9 +141,23 @@ export class UserProfileComponent {
     return (this.editForm.preferredCategories || []).includes(categoryName);
   }
 
-  selectAvatarPreset(avatarUrl: string) {
-    this.editForm.avatar = avatarUrl;
-    this.showAvatarPicker = false;
+  onAvatarFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const base64Url = e.target?.result as string;
+        if (base64Url) {
+          this.editForm.avatar = base64Url;
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  clearAvatar() {
+    this.editForm.avatar = '';
   }
 
   saveProfile() {

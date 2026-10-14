@@ -143,14 +143,6 @@
       gap: 12px;
       margin-bottom: 12px;
 
-      .creator-avatar {
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 2px solid var(--color-primary-border);
-      }
-
       .creator-info {
         display: flex;
         flex-direction: column;

@@ -42,6 +42,8 @@ export interface userProfileType {
   joinedDate: string;
   preferredCategories: string[];
   role?: 'consumer' | 'business_owner';
+  businessName?: string;
+  category?: string;
 }
 
 export interface bookingType {

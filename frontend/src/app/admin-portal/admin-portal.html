@@ -197,7 +197,6 @@
         @for (biz of filteredBusinesses(); track biz.name) {
         <div class="biz-admin-card">
           <div class="biz-card-header">
-            <img [src]="biz.avatar" [alt]="biz.name" class="biz-avatar" />
             <div class="biz-header-info">
               <h3>{{ biz.name }}</h3>
               <span class="biz-cat"><mat-icon>category</mat-icon> {{ biz.category }}</span>

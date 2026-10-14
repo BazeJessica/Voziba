@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 
 import { routes } from './app.routes';
 import { App } from './app';
@@ -25,6 +25,8 @@ import { ContactComponent } from './contact/contact';
 import { BrowseHandiworksComponent } from './browse-handiworks/browse-handiworks';
 import { CategoriesPageComponent } from './categories/categories';
 import { MatIconModule } from '@angular/material/icon';
+import { authInterceptor } from './interceptors/auth.interceptor';
+import { cachingInterceptor } from './interceptors/caching.interceptor';
 
 @NgModule({
   declarations: [
@@ -54,7 +56,11 @@ import { MatIconModule } from '@angular/material/icon';
     RouterModule.forRoot(routes),
     MatIconModule
   ],
-  providers: [provideHttpClient()],
+  providers: [
+    provideHttpClient(withInterceptors([cachingInterceptor, authInterceptor]))
+  ],
   bootstrap: [App]
 })
 export class AppModule { }
+
+

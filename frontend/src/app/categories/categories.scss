@@ -8,7 +8,7 @@
 .categories-hero {
   position: relative;
   background: var(--teal-950);
-  color: #ffffff;
+  color: var(--color-white);
   padding: 4rem 1.5rem 3.5rem 1.5rem;
   text-align: center;
   border-bottom: 1px solid var(--teal-800);
@@ -21,9 +21,9 @@
 
     .section-eyebrow {
       display: inline-block;
-      background: rgba(45, 212, 191, 0.12);
+      background: var(--teal-light-alpha-12);
       color: var(--teal-300);
-      border: 1px solid rgba(45, 212, 191, 0.25);
+      border: 1px solid var(--teal-light-alpha-25);
       font-size: 0.8rem;
       font-weight: 800;
       padding: 0.35rem 0.95rem;
@@ -38,7 +38,7 @@
       font-weight: 900;
       letter-spacing: -0.5px;
       margin: 0 0 1rem 0;
-      color: #ffffff;
+      color: var(--color-white);
     }
 
     p {
@@ -53,22 +53,22 @@
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
-      background: rgba(255, 255, 255, 0.12);
+      background: var(--white-alpha-12);
       backdrop-filter: blur(10px);
       padding: 0.6rem 1.4rem;
       border-radius: 30px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      border: 1px solid var(--white-alpha-20);
       font-size: 0.95rem;
 
       mat-icon {
-        color: #5eead4;
+        color: var(--teal-300);
       }
     }
   }
 }
 
 .categories-toolbar-section {
-  background: #ffffff;
+  background: var(--color-white);
   border-bottom: 1px solid var(--slate-200);
   padding: 1.5rem 0;
 
@@ -94,8 +94,8 @@
 
       &:focus-within {
         border-color: var(--teal-600);
-        background: #ffffff;
-        box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+        background: var(--color-white);
+        box-shadow: 0 0 0 3px var(--teal-alpha-15);
       }
 
       mat-icon {
@@ -168,24 +168,24 @@
   }
 
   .category-card {
-    background: #ffffff;
+    background: var(--color-white);
     border-radius: 20px;
     border: 1px solid var(--slate-200);
     padding: 1.5rem;
     display: flex;
     flex-direction: column;
     cursor: pointer;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 4px 6px -1px var(--black-alpha-03);
     transition: all 0.25s ease;
 
     &:hover {
       transform: translateY(-6px);
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 20px 25px -5px var(--black-alpha-08);
       border-color: var(--teal-500);
 
       .btn-explore-cat {
         background: var(--teal-600);
-        color: #ffffff;
+        color: var(--color-white);
 
         mat-icon {
           transform: translateX(4px);
@@ -281,7 +281,7 @@
     grid-column: 1 / -1;
     text-align: center;
     padding: 4rem 2rem;
-    background: #ffffff;
+    background: var(--color-white);
     border-radius: 24px;
     border: 2px dashed var(--slate-300);
 
@@ -306,7 +306,7 @@
 
     .btn-reset {
       background: var(--teal-600);
-      color: #ffffff;
+      color: var(--color-white);
       padding: 0.65rem 1.4rem;
       border-radius: 10px;
       border: none;

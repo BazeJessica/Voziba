@@ -50,7 +50,7 @@
       <div class="form-group">
         <div class="label-with-link">
           <label for="password">Password <span class="required">*</span></label>
-          <a href="javascript:void(0)" class="forgot-link">Forgot password?</a>
+          <a href="javascript:void(0)" (click)="openForgotModal()" class="forgot-link">Forgot password?</a>
         </div>
         <div class="input-with-icon">
           <input type="password" id="password" [(ngModel)]="password" name="password" placeholder="************"
@@ -78,5 +78,72 @@
         Don't have an account yet? <a routerLink="/signup" class="link-highlight">Sign up here</a>
       </div>
     </form>
+  </div>
+
+  <!-- Forgot Password Modal Overlay -->
+  <div *ngIf="showForgotModal" class="modal-backdrop" (click)="closeForgotModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <mat-icon class="modal-header-icon">lock_reset</mat-icon>
+          <h2>Reset Your Password</h2>
+        </div>
+        <button type="button" class="close-modal-btn" (click)="closeForgotModal()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <p class="modal-description">
+        Enter your email address and your new desired password.
+      </p>
+
+      <form (ngSubmit)="onResetSubmit()" class="modal-form">
+        <div *ngIf="resetError" class="auth-alert alert-error">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ resetError }}</span>
+        </div>
+
+        <div *ngIf="resetSuccess" class="auth-alert alert-success">
+          <mat-icon>check_circle_outline</mat-icon>
+          <span>{{ resetSuccess }}</span>
+        </div>
+
+        <div class="form-group">
+          <label for="resetEmail">Registered Email Address <span class="required">*</span></label>
+          <div class="input-with-icon">
+            <input type="email" id="resetEmail" [(ngModel)]="resetEmail" name="resetEmail"
+              placeholder="name@example.com" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="newPassword">New Password <span class="required">*</span></label>
+          <div class="input-with-icon">
+            <input type="password" id="newPassword" [(ngModel)]="newPassword" name="newPassword"
+              placeholder="Minimum 6 characters" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="confirmNewPassword">Confirm New Password <span class="required">*</span></label>
+          <div class="input-with-icon">
+            <input type="password" id="confirmNewPassword" [(ngModel)]="confirmNewPassword" name="confirmNewPassword"
+              placeholder="Re-enter new password" required />
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" (click)="closeForgotModal()" [disabled]="isResetting">
+            Cancel
+          </button>
+          <button type="submit" class="btn-reset-submit" [disabled]="isResetting">
+            <span *ngIf="!isResetting">Reset Password</span>
+            <span *ngIf="isResetting" class="spinner-text">
+              <span class="spinner"></span> Resetting...
+            </span>
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>

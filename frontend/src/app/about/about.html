@@ -92,9 +92,6 @@
       <div class="team-grid">
         @for (member of teamMembers; track member.name) {
         <div class="team-card">
-          <div class="avatar-wrap">
-            <img [src]="member.avatar" [alt]="member.name" class="team-avatar" />
-          </div>
           <h3>{{ member.name }}</h3>
           <span class="team-role">{{ member.role }}</span>
           <p>{{ member.bio }}</p>

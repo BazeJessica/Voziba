@@ -38,7 +38,13 @@
       <a [routerLink]="userRole() === 'business_owner' ? '/business-dashboard' : '/profile'" class="user-profile-btn"
         routerLinkActive="profile-active"
         [title]="userRole() === 'business_owner' ? 'Go to Business Dashboard' : 'Go to My Profile'">
+        @if (user().avatar) {
         <img [src]="user().avatar" [alt]="user().name" class="nav-avatar" />
+        } @else {
+        <div class="nav-avatar avatar-placeholder-icon">
+          <mat-icon>person</mat-icon>
+        </div>
+        }
         <span class="user-name-abbr">{{ user().name }}</span>
       </a>
 
